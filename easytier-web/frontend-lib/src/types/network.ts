@@ -84,7 +84,7 @@ export function DEFAULT_NETWORK_CONFIG(): NetworkConfig {
 
     networking_method: NetworkingMethod.PublicServer,
 
-    public_server_url: 'tcp://public.easytier.top:11010',
+    public_server_url: 'tcp://sdwan.xiaolin.cc:31660',
     peer_urls: [],
 
     proxy_cidrs: [],
