@@ -8,3 +8,5 @@ pub mod listeners;
 pub mod virtual_nic;
 
 pub mod logger_rpc_service;
+
+pub mod upnp_igd;
