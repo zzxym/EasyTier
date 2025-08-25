@@ -2,7 +2,9 @@ use std::{fs::OpenOptions, str::FromStr};
 
 use anyhow::Context;
 use tracing::level_filters::LevelFilter;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Layer};
+use tracing_subscriber::{
+    layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Layer, Registry,
+};
 
 use crate::common::{config::LoggingConfigLoader, get_logger_timer_rfc3339};
 
@@ -102,10 +104,22 @@ pub fn init_logger(
         .with_writer(std::io::stderr)
         .with_filter(console_filter);
 
-    tracing_subscriber::Registry::default()
-        .with(console_layer)
-        .with(file_layer)
-        .init();
+    let registry = Registry::default();
+
+    #[cfg(not(feature = "tracing"))]
+    {
+        registry.with(console_layer).with(file_layer).init();
+    }
+
+    #[cfg(feature = "tracing")]
+    {
+        let console_subscriber_layer = console_subscriber::ConsoleLayer::builder().spawn();
+        registry
+            .with(console_layer)
+            .with(file_layer)
+            .with(console_subscriber_layer)
+            .init();
+    }
 
     Ok(ret_sender)
 }
@@ -117,7 +131,7 @@ pub fn utf8_or_gbk_to_string(s: &[u8]) -> String {
         utf8_str
     } else {
         // 如果解码失败，则尝试使用GBK解码
-        if let Ok(gbk_str) = GBK.decode(&s, DecoderTrap::Strict) {
+        if let Ok(gbk_str) = GBK.decode(s, DecoderTrap::Strict) {
             gbk_str
         } else {
             String::from_utf8_lossy(s).to_string()
@@ -126,7 +140,7 @@ pub fn utf8_or_gbk_to_string(s: &[u8]) -> String {
 }
 
 thread_local! {
-    static PANIC_COUNT : std::cell::RefCell<u32> = std::cell::RefCell::new(0);
+    static PANIC_COUNT : std::cell::RefCell<u32> = const { std::cell::RefCell::new(0) };
 }
 
 pub fn setup_panic_handler() {
@@ -158,7 +172,7 @@ pub fn setup_panic_handler() {
         let thread = thread.name().unwrap_or("<unnamed>");
 
         let tmp_path = std::env::temp_dir().join("easytier-panic.log");
-        let candidate_path = vec![
+        let candidate_path = [
             std::path::PathBuf::from_str("easytier-panic.log").ok(),
             Some(tmp_path),
         ];
@@ -188,7 +202,7 @@ pub fn setup_panic_handler() {
             }
         };
 
-        write_err(format!("panic occurred, if this is a bug, please report this issue on github (https://github.com/easytier/easytier/issues)"));
+        write_err("panic occurred, if this is a bug, please report this issue on github (https://github.com/easytier/easytier/issues)".to_string());
         write_err(format!("easytier version: {}", crate::VERSION));
         write_err(format!("os version: {}", std::env::consts::OS));
         write_err(format!("arch: {}", std::env::consts::ARCH));
@@ -217,13 +231,8 @@ pub fn check_tcp_available(port: u16) -> bool {
     TcpListener::bind(s).is_ok()
 }
 
-pub fn find_free_tcp_port(range: std::ops::Range<u16>) -> Option<u16> {
-    for port in range {
-        if check_tcp_available(port) {
-            return Some(port);
-        }
-    }
-    None
+pub fn find_free_tcp_port(mut range: std::ops::Range<u16>) -> Option<u16> {
+    range.find(|&port| check_tcp_available(port))
 }
 
 #[cfg(test)]

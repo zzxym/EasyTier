@@ -12,6 +12,7 @@ target-*/
 
 .vscode
 /.idea
+/.direnv/
 
 # perf & flamegraph
 perf.data
@@ -40,3 +41,4 @@ easytier-gui/src-tauri/*.dll
 /easytier-contrib/easytier-ohrs/dist/
 
 .direnv
+.flake-profile

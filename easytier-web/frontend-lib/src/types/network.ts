@@ -51,6 +51,7 @@ export interface NetworkConfig {
   proxy_forward_by_system?: boolean
   disable_encryption?: boolean
   disable_udp_hole_punching?: boolean
+  disable_sym_hole_punching?: boolean
 
   enable_relay_network_whitelist?: boolean
   relay_network_whitelist: string[]
@@ -70,6 +71,8 @@ export interface NetworkConfig {
   enable_private_mode?: boolean
 
   rpc_portal_whitelists: string[]
+  
+  port_forwards: PortForwardConfig[]
 }
 
 export function DEFAULT_NETWORK_CONFIG(): NetworkConfig {
@@ -120,6 +123,7 @@ export function DEFAULT_NETWORK_CONFIG(): NetworkConfig {
     proxy_forward_by_system: false,
     disable_encryption: false,
     disable_udp_hole_punching: false,
+    disable_sym_hole_punching: false,
     enable_relay_network_whitelist: false,
     relay_network_whitelist: [],
     enable_manual_routes: false,
@@ -132,6 +136,7 @@ export function DEFAULT_NETWORK_CONFIG(): NetworkConfig {
     enable_magic_dns: false,
     enable_private_mode: false,
     rpc_portal_whitelists: [],
+    port_forwards: [],
   }
 }
 
@@ -254,6 +259,30 @@ export interface PeerConnStats {
   tx_packets: number
   latency_us: number
 }
+
+export interface PortForwardConfig {
+  bind_ip: string,
+  bind_port: number,
+  dst_ip: string,
+  dst_port: number,
+  proto: string
+}
+
+// 添加新行
+export const addRow = (rows: PortForwardConfig[]) => {
+  rows.push({
+    proto: 'tcp',
+    bind_ip: '',
+    bind_port: 65535,
+    dst_ip: '',
+    dst_port: 65535,
+  });
+};
+
+// 删除行
+export const removeRow = (index: number, rows: PortForwardConfig[]) => {
+  rows.splice(index, 1);
+};
 
 export enum EventType {
   TunDeviceReady = 'TunDeviceReady', // string

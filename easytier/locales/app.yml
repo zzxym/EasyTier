@@ -95,6 +95,9 @@ core_clap:
   disable_encryption:
     en: "disable encryption for peers communication, default is false, must be same with peers"
     zh-CN: "禁用对等节点通信的加密，默认为false，必须与对等节点相同"
+  encryption_algorithm:
+    en: "encryption algorithm to use, supported: '', 'xor', 'chacha20', 'aes-gcm', 'aes-gcm-256', 'openssl-aes128-gcm', 'openssl-aes256-gcm', 'openssl-chacha20'. Empty string means default (aes-gcm)"
+    zh-CN: "要使用的加密算法，支持：''（默认aes-gcm）、'xor'、'chacha20'、'aes-gcm'、'aes-gcm-256'、'openssl-aes128-gcm'、'openssl-aes256-gcm'、'openssl-chacha20'"
   multi_thread:
     en: "use multi-thread runtime, default is single-thread"
     zh-CN: "使用多线程运行时，默认为单线程"
@@ -148,6 +151,9 @@ core_clap:
   disable_udp_hole_punching:
     en: "disable udp hole punching"
     zh-CN: "禁用UDP打洞功能"
+  disable_sym_hole_punching:
+    en: "if true, disable udp nat hole punching for symmetric nat (NAT4), which is based on birthday attack and may be blocked by ISP."
+    zh-CN: "如果为true，则禁用基于生日攻击的对称NAT (NAT4) UDP 打洞功能，该打洞方式可能会被运营商封锁"
   relay_all_peer_rpc:
     en: "relay all peer rpc packets, even if the peer is not in the relay network whitelist. this can help peers not in relay network whitelist to establish p2p connection."
     zh-CN: "转发所有对等节点的RPC数据包，即使对等节点不在转发网络白名单中。这可以帮助白名单外网络中的对等节点建立P2P连接。"
@@ -190,6 +196,18 @@ core_clap:
   foreign_relay_bps_limit:
     en: "the maximum bps limit for foreign network relay, default is no limit. unit: BPS (bytes per second)"
     zh-CN: "作为共享节点时，限制非本地网络的流量转发速率，默认无限制，单位 BPS （字节每秒）"
+  tcp_whitelist:
+    en: "tcp port whitelist. Supports single ports (80) and ranges (8000-9000)"
+    zh-CN: "TCP 端口白名单。支持单个端口（80）和范围（8000-9000）"
+  udp_whitelist:
+    en: "udp port whitelist. Supports single ports (53) and ranges (5000-6000)"
+    zh-CN: "UDP 端口白名单。支持单个端口（53）和范围（5000-6000）"
+  disable_relay_kcp:
+    en: "if true, disable relay kcp packets. avoid consuming too many bandwidth. default is false"
+    zh-CN: "如果为true，则禁止节点转发 KCP 数据包，防止过度消耗流量。默认值为false"
+  enable_relay_foreign_network_kcp:
+    en: "if true, allow relay kcp packets from foreign network. default is false (not forward foreign network kcp packets)"
+    zh-CN: "如果为true，则作为共享节点时也可以转发其他网络的 KCP 数据包。默认值为false（不转发）"
 
 core_app:
   panic_backtrace_save:

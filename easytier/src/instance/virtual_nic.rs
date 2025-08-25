@@ -29,7 +29,7 @@ use pin_project_lite::pin_project;
 use pnet::packet::{ipv4::Ipv4Packet, ipv6::Ipv6Packet};
 use tokio::{
     io::{AsyncRead, AsyncWrite, ReadBuf},
-    sync::Mutex,
+    sync::{Mutex, Notify},
     task::JoinSet,
 };
 use tokio_util::bytes::Bytes;
@@ -68,10 +68,10 @@ impl Stream for TunStream {
     type Item = StreamItem;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<StreamItem>> {
-        let mut self_mut = self.project();
+        let self_mut = self.project();
         let mut g = ready!(self_mut.l.poll_lock(cx));
-        reserve_buf(&mut self_mut.cur_buf, 2500, 4 * 1024);
-        if self_mut.cur_buf.len() == 0 {
+        reserve_buf(self_mut.cur_buf, 2500, 4 * 1024);
+        if self_mut.cur_buf.is_empty() {
             unsafe {
                 self_mut.cur_buf.set_len(*self_mut.payload_offset);
             }
@@ -117,10 +117,7 @@ impl PacketProtocol {
         match self {
             PacketProtocol::IPv4 => Ok(libc::ETH_P_IP as u16),
             PacketProtocol::IPv6 => Ok(libc::ETH_P_IPV6 as u16),
-            PacketProtocol::Other(_) => Err(io::Error::new(
-                io::ErrorKind::Other,
-                "neither an IPv4 nor IPv6 packet",
-            )),
+            PacketProtocol::Other(_) => Err(io::Error::other("neither an IPv4 nor IPv6 packet")),
         }
     }
 
@@ -175,7 +172,7 @@ impl TunZCPacketToBytes {
 }
 
 impl ZCPacketToBytes for TunZCPacketToBytes {
-    fn into_bytes(&self, zc_packet: ZCPacket) -> Result<Bytes, TunnelError> {
+    fn zcpacket_into_bytes(&self, zc_packet: ZCPacket) -> Result<Bytes, TunnelError> {
         let payload_offset = zc_packet.payload_offset();
         let mut inner = zc_packet.inner();
         // we have peer manager header, so payload offset must larger than 4
@@ -383,11 +380,11 @@ impl VirtualNic {
 
             let dev_name = self.global_ctx.get_flags().dev_name;
             if !dev_name.is_empty() {
-                config.tun_name(format!("{}", dev_name));
+                config.tun_name(&dev_name);
             }
         }
 
-        #[cfg(any(target_os = "macos"))]
+        #[cfg(target_os = "macos")]
         config.platform_config(|config| {
             // disable packet information so we can process the header by ourselves, see tun2 impl for more details
             config.packet_information(false);
@@ -402,7 +399,7 @@ impl VirtualNic {
                 Err(e) => {
                     println!("Failed to add Easytier to firewall allowlist, Subnet proxy and KCP proxy may not work properly. error: {}", e);
                     println!("You can add firewall rules manually, or use --use-smoltcp to run with user-space TCP/IP stack.");
-                    println!("");
+                    println!();
                 }
             }
 
@@ -412,7 +409,7 @@ impl VirtualNic {
             }
 
             if !dev_name.is_empty() {
-                config.tun_name(format!("{}", dev_name));
+                config.tun_name(&dev_name);
             } else {
                 use rand::distributions::Distribution as _;
                 let c = crate::arch::windows::interface_count()?;
@@ -515,9 +512,7 @@ impl VirtualNic {
         {
             // set mtu by ourselves, rust-tun does not handle it correctly on windows
             let _g = self.global_ctx.net_ns.guard();
-            self.ifcfg
-                .set_mtu(ifname.as_str(), mtu_in_config as u32)
-                .await?;
+            self.ifcfg.set_mtu(ifname.as_str(), mtu_in_config).await?;
         }
 
         let has_packet_info = cfg!(target_os = "macos");
@@ -631,6 +626,8 @@ pub struct NicCtx {
     peer_mgr: Weak<PeerManager>,
     peer_packet_receiver: Arc<Mutex<PacketRecvChanReceiver>>,
 
+    close_notifier: Arc<Notify>,
+
     nic: Arc<Mutex<VirtualNic>>,
     tasks: JoinSet<()>,
 }
@@ -640,11 +637,15 @@ impl NicCtx {
         global_ctx: ArcGlobalCtx,
         peer_manager: &Arc<PeerManager>,
         peer_packet_receiver: Arc<Mutex<PacketRecvChanReceiver>>,
+        close_notifier: Arc<Notify>,
     ) -> Self {
         NicCtx {
             global_ctx: global_ctx.clone(),
-            peer_mgr: Arc::downgrade(&peer_manager),
+            peer_mgr: Arc::downgrade(peer_manager),
             peer_packet_receiver,
+
+            close_notifier,
+
             nic: Arc::new(Mutex::new(VirtualNic::new(global_ctx))),
             tasks: JoinSet::new(),
         }
@@ -711,11 +712,19 @@ impl NicCtx {
                 tracing::info!("[USER_PACKET] not ipv6 packet: {:?}", ipv6);
                 return;
             }
+            let src_ipv6 = ipv6.get_source();
             let dst_ipv6 = ipv6.get_destination();
             tracing::trace!(
                 ?ret,
                 "[USER_PACKET] recv new packet from tun device and forward to peers."
             );
+
+            if src_ipv6.is_unicast_link_local()
+                && Some(src_ipv6) != mgr.get_global_ctx().get_ipv6().map(|x| x.address())
+            {
+                // do not route link local packet to other nodes unless the address is assigned by user
+                return;
+            }
 
             // TODO: use zero-copy
             let send_ret = mgr.send_msg_by_ip(ret, IpAddr::V6(dst_ipv6)).await;
@@ -750,6 +759,7 @@ impl NicCtx {
         let Some(mgr) = self.peer_mgr.upgrade() else {
             return Err(anyhow::anyhow!("peer manager not available").into());
         };
+        let close_notifier = self.close_notifier.clone();
         self.tasks.spawn(async move {
             while let Some(ret) = stream.next().await {
                 if ret.is_err() {
@@ -758,7 +768,8 @@ impl NicCtx {
                 }
                 Self::do_forward_nic_to_peers(ret.unwrap(), mgr.as_ref()).await;
             }
-            panic!("nic stream closed");
+            close_notifier.notify_one();
+            tracing::error!("nic closed when recving from it");
         });
 
         Ok(())
@@ -766,6 +777,7 @@ impl NicCtx {
 
     fn do_forward_peers_to_nic(&mut self, mut sink: Pin<Box<dyn ZCPacketSink>>) {
         let channel = self.peer_packet_receiver.clone();
+        let close_notifier = self.close_notifier.clone();
         self.tasks.spawn(async move {
             // unlock until coroutine finished
             let mut channel = channel.lock().await;
@@ -779,7 +791,8 @@ impl NicCtx {
                     tracing::error!(?ret, "do_forward_tunnel_to_nic sink error");
                 }
             }
-            panic!("peer packet receiver closed");
+            close_notifier.notify_one();
+            tracing::error!("nic closed when sending to it");
         });
     }
 

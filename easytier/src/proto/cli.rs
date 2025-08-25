@@ -90,7 +90,7 @@ impl PeerRoutePair {
         }
     }
 
-    pub fn get_udp_nat_type(self: &Self) -> String {
+    pub fn get_udp_nat_type(&self) -> String {
         use crate::proto::common::NatType;
         let mut ret = NatType::Unknown;
         if let Some(r) = &self.route.clone().unwrap_or_default().stun_info {
@@ -112,6 +112,44 @@ pub fn list_peer_route_pair(peers: Vec<PeerInfo>, routes: Vec<Route>) -> Vec<Pee
 
         pairs.push(pair);
     }
+
+    pairs.sort_by(|a, b| {
+        let a_is_public_server = a
+            .route
+            .as_ref()
+            .and_then(|r| r.feature_flag.as_ref())
+            .is_some_and(|f| f.is_public_server);
+
+        let b_is_public_server = b
+            .route
+            .as_ref()
+            .and_then(|r| r.feature_flag.as_ref())
+            .is_some_and(|f| f.is_public_server);
+
+        if a_is_public_server != b_is_public_server {
+            return if a_is_public_server {
+                std::cmp::Ordering::Less
+            } else {
+                std::cmp::Ordering::Greater
+            };
+        }
+
+        let a_ip = a
+            .route
+            .as_ref()
+            .and_then(|r| r.ipv4_addr.as_ref())
+            .and_then(|ipv4| ipv4.address.as_ref())
+            .map_or(0, |addr| addr.addr);
+
+        let b_ip = b
+            .route
+            .as_ref()
+            .and_then(|r| r.ipv4_addr.as_ref())
+            .and_then(|ipv4| ipv4.address.as_ref())
+            .map_or(0, |addr| addr.addr);
+
+        a_ip.cmp(&b_ip)
+    });
 
     pairs
 }

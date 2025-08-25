@@ -116,7 +116,7 @@ fn check_locale() {
     if let Ok(globs) = globwalk::glob(locale_path) {
         for entry in globs {
             if let Err(e) = entry {
-                println!("cargo:i18n-error={}", e);
+                println!("cargo:i18n-error={e}");
                 continue;
             }
 
@@ -151,7 +151,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     ];
 
     for proto_file in proto_files.iter().chain(proto_files_reflect.iter()) {
-        println!("cargo:rerun-if-changed={}", proto_file);
+        println!("cargo:rerun-if-changed={proto_file}");
     }
 
     let mut config = prost_build::Config::new();
@@ -169,11 +169,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .type_attribute("peer_rpc.DirectConnectedPeerInfo", "#[derive(Hash)]")
         .type_attribute("peer_rpc.PeerInfoForGlobalMap", "#[derive(Hash)]")
         .type_attribute("peer_rpc.ForeignNetworkRouteInfoKey", "#[derive(Hash, Eq)]")
+        .type_attribute(
+            "peer_rpc.RouteForeignNetworkSummary.Info",
+            "#[derive(Hash, Eq, serde::Serialize, serde::Deserialize)]",
+        )
+        .type_attribute(
+            "peer_rpc.RouteForeignNetworkSummary",
+            "#[derive(Hash, Eq, serde::Serialize, serde::Deserialize)]",
+        )
         .type_attribute("common.RpcDescriptor", "#[derive(Hash, Eq)]")
         .field_attribute(".web.NetworkConfig", "#[serde(default)]")
         .service_generator(Box::new(rpc_build::ServiceGenerator::new()))
         .btree_map(["."])
-        .skip_debug(&[".common.Ipv4Addr", ".common.Ipv6Addr", ".common.UUID"]);
+        .skip_debug([".common.Ipv4Addr", ".common.Ipv6Addr", ".common.UUID"]);
 
     config.compile_protos(&proto_files, &["src/proto/"])?;
 

@@ -3,13 +3,17 @@ use std::collections::HashSet;
 use std::net::{IpAddr, Ipv4Addr};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Weak};
+use std::time::Duration;
 
 use anyhow::Context;
 use cidr::{IpCidr, Ipv4Inet};
 
+use futures::FutureExt;
+use tokio::sync::{oneshot, Notify};
 use tokio::{sync::Mutex, task::JoinSet};
 use tokio_util::sync::CancellationToken;
 
+use crate::common::acl_processor::AclRuleBuilder;
 use crate::common::config::ConfigLoader;
 use crate::common::error::Error;
 use crate::common::global_ctx::{ArcGlobalCtx, GlobalCtx, GlobalCtxEvent};
@@ -29,13 +33,16 @@ use crate::peers::peer_manager::{PeerManager, RouteAlgoType};
 use crate::peers::rpc_service::PeerManagerRpcService;
 use crate::peers::{create_packet_recv_chan, recv_packet_from_chan, PacketRecvChanReceiver};
 use crate::proto::cli::VpnPortalRpc;
-use crate::proto::cli::{GetVpnPortalInfoRequest, GetVpnPortalInfoResponse, VpnPortalInfo};
 use crate::proto::cli::{
-    ListMappedListenerRequest, ListMappedListenerResponse, ManageMappedListenerRequest,
-    ManageMappedListenerResponse, MappedListener, MappedListenerManageAction,
-    MappedListenerManageRpc,
+    AddPortForwardRequest, AddPortForwardResponse, GetPrometheusStatsRequest,
+    GetPrometheusStatsResponse, GetStatsRequest, GetStatsResponse, ListMappedListenerRequest,
+    ListMappedListenerResponse, ListPortForwardRequest, ListPortForwardResponse,
+    ManageMappedListenerRequest, ManageMappedListenerResponse, MappedListener,
+    MappedListenerManageAction, MappedListenerManageRpc, MetricSnapshot, PortForwardManageRpc,
+    RemovePortForwardRequest, RemovePortForwardResponse, StatsRpc,
 };
-use crate::proto::common::TunnelInfo;
+use crate::proto::cli::{GetVpnPortalInfoRequest, GetVpnPortalInfoResponse, VpnPortalInfo};
+use crate::proto::common::{PortForwardConfigPb, TunnelInfo};
 use crate::proto::peer_rpc::PeerCenterRpcServer;
 use crate::proto::rpc_impl::standalone::{RpcServerHook, StandAloneServer};
 use crate::proto::rpc_types;
@@ -254,7 +261,7 @@ pub struct Instance {
 }
 
 impl Instance {
-    pub fn new(config: impl ConfigLoader + Send + Sync + 'static) -> Self {
+    pub fn new(config: impl ConfigLoader + 'static) -> Self {
         let global_ctx = Arc::new(GlobalCtx::new(config));
 
         tracing::info!(
@@ -300,10 +307,10 @@ impl Instance {
         #[cfg(feature = "socks5")]
         let socks5_server = Socks5Server::new(global_ctx.clone(), peer_manager.clone(), None);
 
-        let rpc_server = global_ctx.config.get_rpc_portal().and_then(|s| {
-            Some(StandAloneServer::new(TcpTunnelListener::new(
+        let rpc_server = global_ctx.config.get_rpc_portal().map(|s| {
+            StandAloneServer::new(TcpTunnelListener::new(
                 format!("tcp://{}", s).parse().unwrap(),
-            )))
+            ))
         });
 
         Instance {
@@ -421,6 +428,7 @@ impl Instance {
             let default_ipv4_addr = Ipv4Inet::new(Ipv4Addr::new(10, 126, 126, 0), 24).unwrap();
             let mut current_dhcp_ip: Option<Ipv4Inet> = None;
             let mut next_sleep_time = 0;
+            let nic_closed_notifier = Arc::new(Notify::new());
             loop {
                 tokio::time::sleep(std::time::Duration::from_secs(next_sleep_time)).await;
 
@@ -428,6 +436,11 @@ impl Instance {
                     tracing::warn!("peer manager is dropped, stop dhcp check.");
                     return;
                 };
+
+                if nic_closed_notifier.notified().now_or_never().is_some() {
+                    tracing::debug!("nic ctx is closed, try recreate it");
+                    current_dhcp_ip = None;
+                }
 
                 // do not allocate ip if no peer connected
                 let routes = peer_manager_c.list_routes().await;
@@ -466,7 +479,7 @@ impl Instance {
                     continue;
                 }
 
-                let last_ip = current_dhcp_ip.clone();
+                let last_ip = current_dhcp_ip;
                 tracing::debug!(
                     ?current_dhcp_ip,
                     ?candidate_ipv4_addr,
@@ -490,6 +503,7 @@ impl Instance {
                             global_ctx_c.clone(),
                             &peer_manager_c,
                             _peer_packet_receiver.clone(),
+                            nic_closed_notifier.clone(),
                         );
                         if let Err(e) = new_nic_ctx.run(Some(ip), global_ctx_c.get_ipv6()).await {
                             tracing::error!(
@@ -505,11 +519,7 @@ impl Instance {
                         Self::use_new_nic_ctx(
                             nic_ctx.clone(),
                             new_nic_ctx,
-                            Self::create_magic_dns_runner(
-                                peer_manager_c.clone(),
-                                ifname,
-                                ip.clone(),
-                            ),
+                            Self::create_magic_dns_runner(peer_manager_c.clone(), ifname, ip),
                         )
                         .await;
                     }
@@ -526,12 +536,82 @@ impl Instance {
         });
     }
 
+    fn check_for_static_ip(&self, first_round_output: oneshot::Sender<Result<(), Error>>) {
+        let ipv4_addr = self.global_ctx.get_ipv4();
+        let ipv6_addr = self.global_ctx.get_ipv6();
+
+        // Only run if we have at least one IP address (IPv4 or IPv6)
+        if ipv4_addr.is_none() && ipv6_addr.is_none() {
+            let _ = first_round_output.send(Ok(()));
+            return;
+        }
+
+        let nic_ctx = self.nic_ctx.clone();
+        let peer_mgr = Arc::downgrade(&self.peer_manager);
+        let peer_packet_receiver = self.peer_packet_receiver.clone();
+
+        tokio::spawn(async move {
+            let mut output_tx = Some(first_round_output);
+            loop {
+                let Some(peer_manager) = peer_mgr.upgrade() else {
+                    tracing::warn!("peer manager is dropped, stop static ip check.");
+                    if let Some(output_tx) = output_tx.take() {
+                        let _ = output_tx.send(Err(Error::Unknown));
+                        return;
+                    }
+                    return;
+                };
+
+                let close_notifier = Arc::new(Notify::new());
+                let mut new_nic_ctx = NicCtx::new(
+                    peer_manager.get_global_ctx(),
+                    &peer_manager,
+                    peer_packet_receiver.clone(),
+                    close_notifier.clone(),
+                );
+
+                if let Err(e) = new_nic_ctx.run(ipv4_addr, ipv6_addr).await {
+                    if let Some(output_tx) = output_tx.take() {
+                        let _ = output_tx.send(Err(e));
+                        return;
+                    }
+                    tracing::error!("failed to create new nic ctx, err: {:?}", e);
+                    tokio::time::sleep(Duration::from_secs(1)).await;
+                    continue;
+                }
+                let ifname = new_nic_ctx.ifname().await;
+
+                // Create Magic DNS runner only if we have IPv4
+                let dns_runner = if let Some(ipv4) = ipv4_addr {
+                    Self::create_magic_dns_runner(peer_manager, ifname, ipv4)
+                } else {
+                    None
+                };
+                Self::use_new_nic_ctx(nic_ctx.clone(), new_nic_ctx, dns_runner).await;
+
+                if let Some(output_tx) = output_tx.take() {
+                    let _ = output_tx.send(Ok(()));
+                }
+
+                // NOTICE: make sure we do not hold the peer manager here,
+                while close_notifier.notified().now_or_never().is_none() {
+                    tokio::time::sleep(Duration::from_secs(1)).await;
+                    if peer_mgr.strong_count() == 0 {
+                        tracing::warn!("peer manager is dropped, stop static ip check.");
+                        return;
+                    }
+                }
+            }
+        });
+    }
+
     async fn run_quic_dst(&mut self) -> Result<(), Error> {
-        if !self.global_ctx.get_flags().enable_quic_proxy {
+        if self.global_ctx.get_flags().disable_quic_input {
             return Ok(());
         }
 
-        let quic_dst = QUICProxyDst::new(self.global_ctx.clone())?;
+        let route = Arc::new(self.peer_manager.get_route());
+        let quic_dst = QUICProxyDst::new(self.global_ctx.clone(), route)?;
         quic_dst.start().await?;
         self.global_ctx
             .set_quic_proxy_port(Some(quic_dst.local_addr()?.port()));
@@ -553,28 +633,9 @@ impl Instance {
         if !self.global_ctx.config.get_flags().no_tun {
             #[cfg(not(any(target_os = "android", target_env = "ohos")))]
             {
-                let ipv4_addr = self.global_ctx.get_ipv4();
-                let ipv6_addr = self.global_ctx.get_ipv6();
-
-                // Only run if we have at least one IP address (IPv4 or IPv6)
-                if ipv4_addr.is_some() || ipv6_addr.is_some() {
-                    let mut new_nic_ctx = NicCtx::new(
-                        self.global_ctx.clone(),
-                        &self.peer_manager,
-                        self.peer_packet_receiver.clone(),
-                    );
-
-                    new_nic_ctx.run(ipv4_addr, ipv6_addr).await?;
-                    let ifname = new_nic_ctx.ifname().await;
-
-                    // Create Magic DNS runner only if we have IPv4
-                    let dns_runner = if let Some(ipv4) = ipv4_addr {
-                        Self::create_magic_dns_runner(self.peer_manager.clone(), ifname, ipv4)
-                    } else {
-                        None
-                    };
-                    Self::use_new_nic_ctx(self.nic_ctx.clone(), new_nic_ctx, dns_runner).await;
-                }
+                let (output_tx, output_rx) = oneshot::channel();
+                self.check_for_static_ip(output_tx);
+                output_rx.await.unwrap()?;
             }
         }
 
@@ -609,9 +670,9 @@ impl Instance {
             }
         }
 
-        if let Some(acl) = self.global_ctx.config.get_acl() {
-            self.global_ctx.get_acl_filter().reload_rules(Some(&acl));
-        }
+        self.global_ctx
+            .get_acl_filter()
+            .reload_rules(AclRuleBuilder::build(&self.global_ctx)?.as_ref());
 
         // run after tun device created, so listener can bind to tun device, which may be required by win 10
         self.ip_proxy = Some(IpProxy::new(
@@ -790,6 +851,139 @@ impl Instance {
         MappedListenerManagerRpcService(self.global_ctx.clone())
     }
 
+    fn get_port_forward_manager_rpc_service(
+        &self,
+    ) -> impl PortForwardManageRpc<Controller = BaseController> + Clone {
+        #[derive(Clone)]
+        pub struct PortForwardManagerRpcService {
+            global_ctx: ArcGlobalCtx,
+            socks5_server: Weak<Socks5Server>,
+        }
+
+        #[async_trait::async_trait]
+        impl PortForwardManageRpc for PortForwardManagerRpcService {
+            type Controller = BaseController;
+
+            async fn add_port_forward(
+                &self,
+                _: BaseController,
+                request: AddPortForwardRequest,
+            ) -> Result<AddPortForwardResponse, rpc_types::error::Error> {
+                let Some(socks5_server) = self.socks5_server.upgrade() else {
+                    return Err(anyhow::anyhow!("socks5 server not available").into());
+                };
+                if let Some(cfg) = request.cfg {
+                    tracing::info!("Port forward rule added: {:?}", cfg);
+                    let mut current_forwards = self.global_ctx.config.get_port_forwards();
+                    current_forwards.push(cfg.into());
+                    self.global_ctx
+                        .config
+                        .set_port_forwards(current_forwards.clone());
+                    socks5_server
+                        .reload_port_forwards(&current_forwards)
+                        .await
+                        .with_context(|| "Failed to reload port forwards")?;
+                }
+                Ok(AddPortForwardResponse {})
+            }
+
+            async fn remove_port_forward(
+                &self,
+                _: BaseController,
+                request: RemovePortForwardRequest,
+            ) -> Result<RemovePortForwardResponse, rpc_types::error::Error> {
+                let Some(socks5_server) = self.socks5_server.upgrade() else {
+                    return Err(anyhow::anyhow!("socks5 server not available").into());
+                };
+                let Some(cfg) = request.cfg else {
+                    return Err(anyhow::anyhow!("port forward config is empty").into());
+                };
+                let cfg = cfg.into();
+                let mut current_forwards = self.global_ctx.config.get_port_forwards();
+                current_forwards.retain(|e| *e != cfg);
+                self.global_ctx
+                    .config
+                    .set_port_forwards(current_forwards.clone());
+                socks5_server
+                    .reload_port_forwards(&current_forwards)
+                    .await
+                    .with_context(|| "Failed to reload port forwards")?;
+
+                tracing::info!("Port forward rule removed: {:?}", cfg);
+                Ok(RemovePortForwardResponse {})
+            }
+
+            async fn list_port_forward(
+                &self,
+                _: BaseController,
+                _request: ListPortForwardRequest,
+            ) -> Result<ListPortForwardResponse, rpc_types::error::Error> {
+                let forwards = self.global_ctx.config.get_port_forwards();
+                let cfgs: Vec<PortForwardConfigPb> = forwards.into_iter().map(Into::into).collect();
+                Ok(ListPortForwardResponse { cfgs })
+            }
+        }
+
+        PortForwardManagerRpcService {
+            global_ctx: self.global_ctx.clone(),
+            socks5_server: Arc::downgrade(&self.socks5_server),
+        }
+    }
+
+    fn get_stats_rpc_service(&self) -> impl StatsRpc<Controller = BaseController> + Clone {
+        #[derive(Clone)]
+        pub struct StatsRpcService {
+            global_ctx: ArcGlobalCtx,
+        }
+
+        #[async_trait::async_trait]
+        impl StatsRpc for StatsRpcService {
+            type Controller = BaseController;
+
+            async fn get_stats(
+                &self,
+                _: BaseController,
+                _request: GetStatsRequest,
+            ) -> Result<GetStatsResponse, rpc_types::error::Error> {
+                let stats_manager = self.global_ctx.stats_manager();
+                let snapshots = stats_manager.get_all_metrics();
+
+                let metrics = snapshots
+                    .into_iter()
+                    .map(|snapshot| {
+                        let mut labels = std::collections::BTreeMap::new();
+                        for label in snapshot.labels.labels() {
+                            labels.insert(label.key.clone(), label.value.clone());
+                        }
+
+                        MetricSnapshot {
+                            name: snapshot.name_str(),
+                            value: snapshot.value,
+                            labels,
+                        }
+                    })
+                    .collect();
+
+                Ok(GetStatsResponse { metrics })
+            }
+
+            async fn get_prometheus_stats(
+                &self,
+                _: BaseController,
+                _request: GetPrometheusStatsRequest,
+            ) -> Result<GetPrometheusStatsResponse, rpc_types::error::Error> {
+                let stats_manager = self.global_ctx.stats_manager();
+                let prometheus_text = stats_manager.export_prometheus();
+
+                Ok(GetPrometheusStatsResponse { prometheus_text })
+            }
+        }
+
+        StatsRpcService {
+            global_ctx: self.global_ctx.clone(),
+        }
+    }
+
     async fn run_rpc_server(&mut self) -> Result<(), Error> {
         let Some(_) = self.global_ctx.config.get_rpc_portal() else {
             tracing::info!("rpc server not enabled, because rpc_portal is not set.");
@@ -803,6 +997,8 @@ impl Instance {
         let peer_center = self.peer_center.clone();
         let vpn_portal_rpc = self.get_vpn_portal_rpc_service();
         let mapped_listener_manager_rpc = self.get_mapped_listener_manager_rpc_service();
+        let port_forward_manager_rpc = self.get_port_forward_manager_rpc_service();
+        let stats_rpc_service = self.get_stats_rpc_service();
 
         let s = self.rpc_server.as_mut().unwrap();
         let peer_mgr_rpc_service = PeerManagerRpcService::new(peer_mgr.clone());
@@ -821,6 +1017,14 @@ impl Instance {
             .register(VpnPortalRpcServer::new(vpn_portal_rpc), "");
         s.registry().register(
             MappedListenerManageRpcServer::new(mapped_listener_manager_rpc),
+            "",
+        );
+        s.registry().register(
+            PortForwardManageRpcServer::new(port_forward_manager_rpc),
+            "",
+        );
+        s.registry().register(
+            crate::proto::cli::StatsRpcServer::new(stats_rpc_service),
             "",
         );
 
@@ -895,10 +1099,12 @@ impl Instance {
         if fd <= 0 {
             return Ok(());
         }
+        let close_notifier = Arc::new(Notify::new());
         let mut new_nic_ctx = NicCtx::new(
             global_ctx.clone(),
             &peer_manager,
             peer_packet_receiver.clone(),
+            close_notifier.clone(),
         );
         new_nic_ctx
             .run_for_android(fd)
