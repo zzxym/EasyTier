@@ -8,9 +8,9 @@ use crate::{
             CollectNetworkInfoRequest, CollectNetworkInfoResponse, DeleteNetworkInstanceRequest,
             DeleteNetworkInstanceResponse, GetConfigRequest, GetConfigResponse,
             ListNetworkInstanceRequest, ListNetworkInstanceResponse, NetworkInstanceRunningInfoMap,
-            RetainNetworkInstanceRequest, RetainNetworkInstanceResponse, RunNetworkInstanceRequest,
-            RunNetworkInstanceResponse, ValidateConfigRequest, ValidateConfigResponse,
-            WebClientService,
+            ReplaceConfigRequest, ReplaceConfigResponse, RetainNetworkInstanceRequest,
+            RetainNetworkInstanceResponse, RunNetworkInstanceRequest, RunNetworkInstanceResponse,
+            ValidateConfigRequest, ValidateConfigResponse, WebClientService,
         },
     },
 };
@@ -186,5 +186,47 @@ impl WebClientService for Controller {
             config: Some(network_config),
             toml_config,
         })
+    }
+
+    //   rpc ReplaceConfig(ReplaceConfigRequest) returns (ReplaceConfigResponse) {}
+    async fn replace_config(
+        &self,
+        _: BaseController,
+        req: ReplaceConfigRequest,
+    ) -> Result<ReplaceConfigResponse, rpc_types::error::Error> {
+        let inst_id = req.inst_id.ok_or_else(|| {
+            rpc_types::error::Error::ExecutionError(
+                anyhow::anyhow!("instance_id is required").into(),
+            )
+        })?;
+
+        let new_config = req.config.ok_or_else(|| {
+            rpc_types::error::Error::ExecutionError(anyhow::anyhow!("config is required").into())
+        })?;
+
+        // Generate the TomlConfigLoader from NetworkConfig
+        let new_toml_config = new_config.gen_config()?;
+
+        // Replace the configuration
+        match self
+            .manager
+            .replace_network_config(&inst_id.into(), new_toml_config)
+        {
+            Ok(()) => {
+                println!("instance {} config replaced successfully", inst_id);
+                Ok(ReplaceConfigResponse {
+                    success: true,
+                    error_msg: None,
+                })
+            }
+            Err(e) => {
+                let error_msg = format!("Failed to replace config for instance {}: {}", inst_id, e);
+                eprintln!("{}", error_msg);
+                Ok(ReplaceConfigResponse {
+                    success: false,
+                    error_msg: Some(error_msg),
+                })
+            }
+        }
     }
 }

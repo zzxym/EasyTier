@@ -187,6 +187,16 @@ message GetConfigResponse {
   string toml_config = 2;
 }
 
+message ReplaceConfigRequest {
+  common.UUID inst_id = 1;
+  NetworkConfig config = 2;
+}
+
+message ReplaceConfigResponse {
+  bool success = 1;
+  optional string error_msg = 2;
+}
+
 service WebClientService {
   rpc ValidateConfig(ValidateConfigRequest) returns (ValidateConfigResponse) {}
   rpc RunNetworkInstance(RunNetworkInstanceRequest) returns (RunNetworkInstanceResponse) {}
@@ -195,4 +205,5 @@ service WebClientService {
   rpc ListNetworkInstance(ListNetworkInstanceRequest) returns (ListNetworkInstanceResponse) {}
   rpc DeleteNetworkInstance(DeleteNetworkInstanceRequest) returns (DeleteNetworkInstanceResponse) {}
   rpc GetConfig(GetConfigRequest) returns (GetConfigResponse) {}
+  rpc ReplaceConfig(ReplaceConfigRequest) returns (ReplaceConfigResponse) {}
 }

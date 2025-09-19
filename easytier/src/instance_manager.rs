@@ -146,6 +146,41 @@ impl NetworkInstanceManager {
             .map(|instance| instance.value().get_config())
     }
 
+    pub fn replace_network_config(
+        &self,
+        instance_id: &uuid::Uuid,
+        new_config: TomlConfigLoader,
+    ) -> Result<(), anyhow::Error> {
+        let mut instance = self
+            .instance_map
+            .get_mut(instance_id)
+            .ok_or_else(|| anyhow::anyhow!("instance {} not found", instance_id))?;
+
+        // Stop the current instance if it's running
+        if instance.is_easytier_running() {
+            // Get the config source before stopping
+            let config_source = instance.get_config_source();
+
+            // Create a new instance with the new config
+            let mut new_instance = NetworkInstance::new(new_config, config_source);
+
+            // Start the new instance
+            new_instance.start()?;
+
+            // Replace the old instance with the new one
+            *instance = new_instance;
+
+            // Restart the instance task if needed
+            self.start_instance_task(*instance_id)?;
+        } else {
+            // If the instance is not running, just replace the config
+            let config_source = instance.get_config_source();
+            *instance = NetworkInstance::new(new_config, config_source);
+        }
+
+        Ok(())
+    }
+
     pub fn list_network_instance_ids(&self) -> Vec<uuid::Uuid> {
         self.instance_map.iter().map(|item| *item.key()).collect()
     }

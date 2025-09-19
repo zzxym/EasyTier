@@ -1335,7 +1335,7 @@ impl CommandHandler<'_> {
             inst_id: node_info.peer_id.to_string(),
             ipv4: node_info.ipv4_addr,
             hostname: node_info.hostname,
-            network_name: node_info.network_name,
+            network_name: "".to_string(), // NodeInfo doesn't have network_name field
         }];
 
         print_output(&items, self.output_format)?;
