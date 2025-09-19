@@ -460,6 +460,10 @@ impl NetworkInstance {
             None
         }
     }
+
+    pub fn get_config(&self) -> TomlConfigLoader {
+        self.config.clone()
+    }
 }
 
 pub fn add_proxy_network_to_config(

@@ -140,6 +140,12 @@ impl NetworkInstanceManager {
             .and_then(|instance| instance.value().get_running_info())
     }
 
+    pub fn get_network_config(&self, instance_id: &uuid::Uuid) -> Option<TomlConfigLoader> {
+        self.instance_map
+            .get(instance_id)
+            .map(|instance| instance.value().get_config())
+    }
+
     pub fn list_network_instance_ids(&self) -> Vec<uuid::Uuid> {
         self.instance_map.iter().map(|item| *item.key()).collect()
     }

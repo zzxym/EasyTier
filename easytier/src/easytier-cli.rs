@@ -109,6 +109,8 @@ enum SubCommand {
     Stats(StatsArgs),
     #[command(about = "manage logger configuration")]
     Logger(LoggerArgs),
+    #[command(about = "manage network instance configuration")]
+    Config(ConfigArgs),
     #[command(about = t!("core_clap.generate_completions").to_string())]
     GenAutocomplete { shell: Shell },
 }
@@ -290,6 +292,23 @@ enum LoggerSubCommand {
     Set {
         #[arg(help = "Log level (disabled, error, warning, info, debug, trace)")]
         level: String,
+    },
+}
+
+#[derive(Args, Debug)]
+struct ConfigArgs {
+    #[command(subcommand)]
+    sub_command: Option<ConfigSubCommand>,
+}
+
+#[derive(Subcommand, Debug)]
+enum ConfigSubCommand {
+    /// List network instances and their configurations
+    List,
+    /// Get configuration for a specific instance
+    Get {
+        #[arg(help = "Instance ID")]
+        inst_id: String,
     },
 }
 
@@ -1286,6 +1305,68 @@ impl CommandHandler<'_> {
         }
         Ok(ports)
     }
+
+    async fn handle_config_list(&self) -> Result<(), Error> {
+        let client = self.get_peer_manager_client().await?;
+        let node_info = client
+            .show_node_info(BaseController::default(), ShowNodeInfoRequest::default())
+            .await?
+            .node_info
+            .ok_or(anyhow::anyhow!("node info not found"))?;
+
+        if self.verbose || *self.output_format == OutputFormat::Json {
+            println!("{}", serde_json::to_string_pretty(&node_info)?);
+            return Ok(());
+        }
+
+        #[derive(tabled::Tabled, serde::Serialize)]
+        struct ConfigTableItem {
+            #[tabled(rename = "Instance ID")]
+            inst_id: String,
+            #[tabled(rename = "Virtual IP")]
+            ipv4: String,
+            #[tabled(rename = "Hostname")]
+            hostname: String,
+            #[tabled(rename = "Network Name")]
+            network_name: String,
+        }
+
+        let items = vec![ConfigTableItem {
+            inst_id: node_info.peer_id.to_string(),
+            ipv4: node_info.ipv4_addr,
+            hostname: node_info.hostname,
+            network_name: node_info.network_name,
+        }];
+
+        print_output(&items, self.output_format)?;
+        Ok(())
+    }
+
+    async fn handle_config_get(&self, inst_id: &str) -> Result<(), Error> {
+        let client = self.get_peer_manager_client().await?;
+        let node_info = client
+            .show_node_info(BaseController::default(), ShowNodeInfoRequest::default())
+            .await?
+            .node_info
+            .ok_or(anyhow::anyhow!("node info not found"))?;
+
+        // Check if the requested instance ID matches the current node
+        if node_info.peer_id.to_string() != inst_id {
+            return Err(anyhow::anyhow!(
+                "Instance ID {} not found. Current instance ID is {}",
+                inst_id,
+                node_info.peer_id
+            ));
+        }
+
+        if self.verbose || *self.output_format == OutputFormat::Json {
+            println!("{}", serde_json::to_string_pretty(&node_info)?);
+            return Ok(());
+        }
+
+        println!("{}", node_info.config);
+        Ok(())
+    }
 }
 
 #[derive(Debug)]
@@ -2095,6 +2176,14 @@ async fn main() -> Result<(), Error> {
             }
             Some(LoggerSubCommand::Set { level }) => {
                 handler.handle_logger_set(level).await?;
+            }
+        },
+        SubCommand::Config(config_args) => match &config_args.sub_command {
+            Some(ConfigSubCommand::List) | None => {
+                handler.handle_config_list().await?;
+            }
+            Some(ConfigSubCommand::Get { inst_id }) => {
+                handler.handle_config_get(inst_id).await?;
             }
         },
         SubCommand::GenAutocomplete { shell } => {

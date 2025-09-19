@@ -6,10 +6,11 @@ use crate::{
         rpc_types::{self, controller::BaseController},
         web::{
             CollectNetworkInfoRequest, CollectNetworkInfoResponse, DeleteNetworkInstanceRequest,
-            DeleteNetworkInstanceResponse, ListNetworkInstanceRequest, ListNetworkInstanceResponse,
-            NetworkInstanceRunningInfoMap, RetainNetworkInstanceRequest,
-            RetainNetworkInstanceResponse, RunNetworkInstanceRequest, RunNetworkInstanceResponse,
-            ValidateConfigRequest, ValidateConfigResponse, WebClientService,
+            DeleteNetworkInstanceResponse, GetConfigRequest, GetConfigResponse,
+            ListNetworkInstanceRequest, ListNetworkInstanceResponse, NetworkInstanceRunningInfoMap,
+            RetainNetworkInstanceRequest, RetainNetworkInstanceResponse, RunNetworkInstanceRequest,
+            RunNetworkInstanceResponse, ValidateConfigRequest, ValidateConfigResponse,
+            WebClientService,
         },
     },
 };
@@ -151,6 +152,39 @@ impl WebClientService for Controller {
         println!("instance {:?} retained", remain_inst_ids);
         Ok(DeleteNetworkInstanceResponse {
             remain_inst_ids: remain_inst_ids.into_iter().map(Into::into).collect(),
+        })
+    }
+
+    //   rpc GetConfig(GetConfigRequest) returns (GetConfigResponse) {}
+    async fn get_config(
+        &self,
+        _: BaseController,
+        req: GetConfigRequest,
+    ) -> Result<GetConfigResponse, rpc_types::error::Error> {
+        let inst_id = req.inst_id.ok_or_else(|| {
+            rpc_types::error::Error::ExecutionError(
+                anyhow::anyhow!("instance_id is required").into(),
+            )
+        })?;
+
+        let config = self
+            .manager
+            .get_network_config(&inst_id.into())
+            .ok_or_else(|| {
+                rpc_types::error::Error::ExecutionError(
+                    anyhow::anyhow!("instance {} not found", inst_id).into(),
+                )
+            })?;
+
+        // Get the NetworkConfig from the instance
+        let network_config = crate::launcher::NetworkConfig::new_from_config(&config)?;
+
+        // Get the TOML config string
+        let toml_config = config.dump();
+
+        Ok(GetConfigResponse {
+            config: Some(network_config),
+            toml_config,
         })
     }
 }

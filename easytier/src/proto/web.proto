@@ -178,6 +178,15 @@ message DeleteNetworkInstanceResponse {
   repeated common.UUID remain_inst_ids = 1;
 }
 
+message GetConfigRequest {
+  common.UUID inst_id = 1;
+}
+
+message GetConfigResponse {
+  NetworkConfig config = 1;
+  string toml_config = 2;
+}
+
 service WebClientService {
   rpc ValidateConfig(ValidateConfigRequest) returns (ValidateConfigResponse) {}
   rpc RunNetworkInstance(RunNetworkInstanceRequest) returns (RunNetworkInstanceResponse) {}
@@ -185,4 +194,5 @@ service WebClientService {
   rpc CollectNetworkInfo(CollectNetworkInfoRequest) returns (CollectNetworkInfoResponse) {}
   rpc ListNetworkInstance(ListNetworkInstanceRequest) returns (ListNetworkInstanceResponse) {}
   rpc DeleteNetworkInstance(DeleteNetworkInstanceRequest) returns (DeleteNetworkInstanceResponse) {}
+  rpc GetConfig(GetConfigRequest) returns (GetConfigResponse) {}
 }
