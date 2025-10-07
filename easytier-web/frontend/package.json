@@ -12,7 +12,7 @@
     "@modyfi/vite-plugin-yaml": "^1.1.0",
     "@primeuix/themes": "^1.2.3",
     "axios": "^1.7.7",
-    "easytier-frontend-lib": "workspace:*",
+    "sdwan-frontend-lib": "workspace:*",
     "primevue": "^4.3.9",
     "tailwindcss-primeui": "^0.3.4",
     "vue": "^3.5.12",
