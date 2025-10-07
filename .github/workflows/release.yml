@@ -97,3 +97,4 @@ jobs:
             ./zipped_assets/*
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ inputs.version }}
+          make_latest: ${{ inputs.make_latest }}
