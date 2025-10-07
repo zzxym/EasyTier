@@ -38,7 +38,7 @@ pub fn router() -> Router<AppStateInner> {
 mod put {
     use axum::Json;
     use axum_login::AuthUser;
-    use easytier::proto::common::Void;
+    use sdwan::proto::common::Void;
 
     use crate::restful::{other_error, users::ChangePassword, HttpHandleError};
 
@@ -68,7 +68,7 @@ mod put {
 
 mod post {
     use axum::Json;
-    use easytier::proto::common::Void;
+    use sdwan::proto::common::Void;
 
     use crate::restful::{
         captcha::extension::{axum_tower_sessions::CaptchaAxumTowerSessionStaticExt, CaptchaUtil},
@@ -144,7 +144,7 @@ mod get {
         other_error, HttpHandleError,
     };
     use axum::{response::Response, Json};
-    use easytier::proto::common::Void;
+    use sdwan::proto::common::Void;
     use tower_sessions::Session;
 
     use super::*;

@@ -5,10 +5,11 @@ use axum::http::StatusCode;
 use axum::routing::{delete, post};
 use axum::{extract::State, routing::get, Json, Router};
 use axum_login::AuthUser;
-use easytier::launcher::NetworkConfig;
-use easytier::proto::common::Void;
-use easytier::proto::rpc_types::controller::BaseController;
-use easytier::proto::{self, api::manage::*, web::*};
+use sdwan::launcher::NetworkConfig;
+use sdwan::proto::common::Void;
+use sdwan::proto::rpc_types::controller::BaseController;
+use sdwan::proto::{self, api::manage::*, web::*};
+use sdwan::proto::api::manage::{ListNetworkInstanceRequest, DeleteNetworkInstanceRequest, RunNetworkInstanceRequest};
 
 use crate::client_manager::session::{Location, Session};
 use crate::client_manager::ClientManager;
@@ -58,8 +59,8 @@ struct RemoveNetworkJsonReq {
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
 struct ListNetworkInstanceIdsJsonResp {
-    running_inst_ids: Vec<easytier::proto::common::Uuid>,
-    disabled_inst_ids: Vec<easytier::proto::common::Uuid>,
+    running_inst_ids: Vec<sdwan::proto::common::Uuid>,
+    disabled_inst_ids: Vec<sdwan::proto::common::Uuid>,
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]

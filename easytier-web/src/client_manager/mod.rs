@@ -7,7 +7,7 @@ use std::sync::{
 };
 
 use dashmap::DashMap;
-use easytier::{proto::web::HeartbeatRequest, tunnel::TunnelListener};
+use sdwan::{proto::web::HeartbeatRequest, tunnel::TunnelListener};
 use maxminddb::geoip2;
 use session::{Location, Session};
 use storage::{Storage, StorageToken};
