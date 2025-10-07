@@ -34,7 +34,8 @@ permissions:
 
 jobs:
   release:
-    if: contains('["zzxym"]', github.actor)
+    # 确保只有通过workflow_dispatch触发，并且由特定用户执行
+    if: github.event_name == 'workflow_dispatch' && contains('["zzxym"]', github.actor)
     runs-on: ubuntu-latest
     steps:
       -
