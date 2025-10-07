@@ -4,7 +4,7 @@ MODDIR=${0%/*}
 CONFIG_FILE="${MODDIR}/config/config.toml"
 LOG_FILE="${MODDIR}/log.log"
 MODULE_PROP="${MODDIR}/module.prop"
-EASYTIER="${MODDIR}/easytier-core"
+SDWAN="${MODDIR}/sdwan-core"
 REDIR_STATUS=""
 
 # 更新module.prop文件中的description
@@ -30,12 +30,12 @@ fi
 while true; do
     if ls $MODDIR | grep -q "disable"; then
         update_module_description "关闭中 | ${REDIR_STATUS}"
-        if pgrep -f 'easytier-core' >/dev/null; then
+        if pgrep -f 'sdwan-core' >/dev/null; then
             echo "开关控制$(date "+%Y-%m-%d %H:%M:%S") 进程已存在，正在关闭 ..."
-            pkill easytier-core # 关闭进程
+            pkill sdwan-core # 关闭进程
         fi
     else
-        if ! pgrep -f 'easytier-core' >/dev/null; then
+        if ! pgrep -f 'sdwan-core' >/dev/null; then
             if [ ! -f "$CONFIG_FILE" ]; then
                 update_module_description "config.toml不存在"
                 sleep 3s
@@ -44,17 +44,17 @@ while true; do
 
             # 如果 config 目录下存在 command_args 文件，则读取其中的内容作为启动参数
             if [ -f "${MODDIR}/config/command_args" ]; then
-                TZ=Asia/Shanghai ${EASYTIER} $(cat ${MODDIR}/config/command_args) --hostname "$(getprop ro.product.brand)-$(getprop ro.product.model)" > ${LOG_FILE} &
-                sleep 5s # 等待easytier-core启动完成
+                TZ=Asia/Shanghai ${SDWAN} $(cat ${MODDIR}/config/command_args) --hostname "$(getprop ro.product.brand)-$(getprop ro.product.model)" > ${LOG_FILE} &
+                sleep 5s # 等待sdwan-core启动完成
                 update_module_description "主程序已开启(启动参数模式) | ${REDIR_STATUS}"
             else
-                TZ=Asia/Shanghai ${EASYTIER} -c ${CONFIG_FILE} --hostname "$(getprop ro.product.brand)-$(getprop ro.product.model)" > ${LOG_FILE} &
-                sleep 5s # 等待easytier-core启动完成
+                TZ=Asia/Shanghai ${SDWAN} -c ${CONFIG_FILE} --hostname "$(getprop ro.product.brand)-$(getprop ro.product.model)" > ${LOG_FILE} &
+                sleep 5s # 等待sdwan-core启动完成
                 update_module_description "主程序已开启(配置文件模式) | ${REDIR_STATUS}"
             fi
             ip rule add from all lookup main
-            if ! pgrep -f 'easytier-core' >/dev/null; then
-                update_module_descriptio "主程序启动失败，请检查配置文件"
+            if ! pgrep -f 'sdwan-core' >/dev/null; then
+                update_module_description "主程序启动失败，请检查配置文件"
             fi
         else
             echo "开关控制$(date "+%Y-%m-%d %H:%M:%S") 进程已存在"

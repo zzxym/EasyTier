@@ -9,7 +9,7 @@ use clap::Parser;
 use sdwan::{
     common::{
         config::{ConsoleLoggerConfig, FileLoggerConfig, LoggingConfigLoader},
-        constants::EASYTIER_VERSION,
+        constants::SDWAN_VERSION,
         error::Error,
         network::{local_ipv4, local_ipv6},
     },
@@ -30,7 +30,7 @@ mod web;
 rust_i18n::i18n!("locales", fallback = "en");
 
 #[derive(Parser, Debug)]
-#[command(name = "sdwan-web", author, version = EASYTIER_VERSION , about, long_about = None)]
+#[command(name = "sdwan-web", author, version = SDWAN_VERSION , about, long_about = None)]
 struct Cli {
     #[arg(short, long, default_value = "et.db", help = t!("cli.db").to_string())]
     db: String,

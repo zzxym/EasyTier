@@ -1,4 +1,4 @@
-name: EasyTier Test
+name: SDWAN Test
 
 on:
   push:

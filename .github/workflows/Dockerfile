@@ -20,7 +20,7 @@ RUN ARTIFACT_ARCH=""; \
         echo "Unsupported architecture: $TARGETPLATFORM"; \
         exit 1; \
     fi; \
-    cp /tmp/artifacts/easytier-linux-${ARTIFACT_ARCH}/* /tmp/output;
+    cp /tmp/artifacts/sdwan-linux-${ARTIFACT_ARCH}/* /tmp/output;
 
 FROM base
 
@@ -42,4 +42,4 @@ EXPOSE 11011/tcp
 # wss
 EXPOSE 11012/tcp
 
-ENTRYPOINT ["/sbin/tini", "--", "easytier-core"]
+ENTRYPOINT ["/sbin/tini", "--", "sdwan-core"]

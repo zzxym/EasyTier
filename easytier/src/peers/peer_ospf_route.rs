@@ -30,7 +30,7 @@ use tokio::{
 
 use crate::{
     common::{
-        config::NetworkIdentity, constants::EASYTIER_VERSION, global_ctx::ArcGlobalCtx,
+        config::NetworkIdentity, constants::SDWAN_VERSION, global_ctx::ArcGlobalCtx,
         stun::StunInfoCollectorTrait, PeerId,
     },
     peers::route_trait::{Route, RouteInterfaceBox},
@@ -124,7 +124,7 @@ impl RoutePeerInfo {
             udp_stun_info: 0,
             last_update: Some(SystemTime::now().into()),
             version: 0,
-            easytier_version: EASYTIER_VERSION.to_string(),
+            easytier_version: SDWAN_VERSION.to_string(),
             feature_flag: None,
             peer_route_id: 0,
             network_length: 24,
@@ -162,7 +162,7 @@ impl RoutePeerInfo {
             last_update: self.last_update,
             version: self.version,
 
-            easytier_version: EASYTIER_VERSION.to_string(),
+            easytier_version: SDWAN_VERSION.to_string(),
             feature_flag: Some(global_ctx.get_feature_flags()),
             peer_route_id,
             network_length: global_ctx

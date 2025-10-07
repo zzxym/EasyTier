@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# EasyTier Uptime Monitor 停止服务脚本
+# SDWAN Uptime Monitor 停止服务脚本
 
 set -e
 

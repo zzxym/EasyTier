@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# EasyTier Uptime Monitor 集成测试脚本
+# SDWAN Uptime Monitor 集成测试脚本
 
 set -e
 

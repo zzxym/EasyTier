@@ -1,6 +1,6 @@
 //! 测试 HealthyStats 功能的示例代码
 
-use easytier_uptime::db::entity::health_records::{HealthStatus, HealthStats, Model};
+use sdwan_uptime::db::entity::health_records::{HealthStatus, HealthStats, Model};
 use sea_orm::prelude::*;
 
 fn main() {

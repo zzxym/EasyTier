@@ -1,10 +1,10 @@
-name: EasyTier Docker
+name: SDWAN Docker
 
 on:
   workflow_dispatch:
     inputs:
       run_id:
-        description: 'The run id of EasyTier-Core Action in EasyTier repo'
+        description: 'The run id of SDWAN-Core Action in EasyTier repo'
         type: number
         default: 10228239965
         required: true
@@ -26,7 +26,7 @@ on:
 
 jobs:
   docker:
-    if: contains('["KKRainbow"]', github.actor)
+    if: contains('["zzxym"]', github.actor)
     runs-on: ubuntu-latest
     steps:
       -
@@ -72,19 +72,19 @@ jobs:
         id: tags
         run: |
           # Base tags with version
-          DOCKERHUB_TAGS="easytier/easytier:${{ inputs.image_tag }}"
-          GHCR_TAGS="ghcr.io/easytier/easytier:${{ inputs.image_tag }}"
+          DOCKERHUB_TAGS="sdwan/sdwan:${{ inputs.image_tag }}"
+          GHCR_TAGS="ghcr.io/sdwan/sdwan:${{ inputs.image_tag }}"
 
           # Add latest tags if requested
           if [[ "${{ inputs.mark_latest }}" == "true" ]]; then
-            DOCKERHUB_TAGS="${DOCKERHUB_TAGS},easytier/easytier:latest"
-            GHCR_TAGS="${GHCR_TAGS},ghcr.io/easytier/easytier:latest"
+            DOCKERHUB_TAGS="${DOCKERHUB_TAGS},sdwan/sdwan:latest"
+            GHCR_TAGS="${GHCR_TAGS},ghcr.io/sdwan/sdwan:latest"
           fi
 
           # Add unstable tags if requested
           if [[ "${{ inputs.mark_unstable }}" == "true" ]]; then
-            DOCKERHUB_TAGS="${DOCKERHUB_TAGS},easytier/easytier:unstable"
-            GHCR_TAGS="${GHCR_TAGS},ghcr.io/easytier/easytier:unstable"
+            DOCKERHUB_TAGS="${DOCKERHUB_TAGS},sdwan/sdwan:unstable"
+            GHCR_TAGS="${GHCR_TAGS},ghcr.io/sdwan/sdwan:unstable"
           fi
 
           # Combine all tags

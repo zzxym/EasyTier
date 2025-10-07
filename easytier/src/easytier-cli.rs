@@ -21,7 +21,7 @@ use tokio::time::timeout;
 
 use sdwan::{
     common::{
-        constants::EASYTIER_VERSION,
+        constants::SDWAN_VERSION,
         stun::{StunInfoCollector, StunInfoCollectorTrait},
     },
     peers,
@@ -63,13 +63,13 @@ use sdwan::{
 rust_i18n::i18n!("locales", fallback = "en");
 
 #[derive(Parser, Debug)]
-#[command(name = "easytier-cli", author, version = EASYTIER_VERSION, about, long_about = None)]
+#[command(name = "sdwan-cli", author, version = SDWAN_VERSION, about, long_about = None)]
 struct Cli {
     #[arg(
         short = 'p',
         long,
         default_value = "127.0.0.1:15888",
-        help = "easytier-core rpc portal address"
+        help = "sdwan-core rpc portal address"
     )]
     rpc_portal: SocketAddr,
 

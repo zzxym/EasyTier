@@ -9,23 +9,23 @@ SHAN='\e[1;33;5m'
 RES='\e[0m'
 
 HELP() {
-  echo -e "\r\n${GREEN_COLOR}EasyTier Installation Script Help${RES}\r\n"
+  echo -e "\r\n${GREEN_COLOR}SDWAN Installation Script Help${RES}\r\n"
   echo "Usage: ./install.sh [command] [options]"
   echo
-  echo "Commands:"
-  echo "  install    Install EasyTier"
-  echo "  uninstall  Uninstall EasyTier"
-  echo "  update     Update EasyTier to the latest version"
+  echo "Commands:"  
+  echo "  install    Install SDWAN"
+  echo "  uninstall  Uninstall SDWAN"
+  echo "  update     Update SDWAN to the latest version"
   echo "  help       Show this help message"
   echo
-  echo "Options:"
+  echo "Options:"  
   echo "  --skip-folder-verify  Skip folder verification during installation"
   echo "  --skip-folder-fix     Skip automatic folder path fixing"
   echo "  --no-gh-proxy        Disable GitHub proxy"
   echo "  --gh-proxy URL       Set custom GitHub proxy URL"
   echo
-  echo "Examples:"
-  echo "  ./install.sh install /opt/easytier"
+  echo "Examples:"  
+  echo "  ./install.sh install /opt/sdwan"
   echo "  ./install.sh install --skip-folder-verify"
   echo "  ./install.sh install --no-gh-proxy"
   echo "  ./install.sh install --gh-proxy https://your-proxy.com/"
@@ -73,18 +73,19 @@ while [[ "$#" -gt 0 ]]; do
         *) echo "Unknown option: $1"; exit 1 ;;
     esac
     shift
+
 done
 
 if [ -z "$INSTALL_PATH" ]; then
-    INSTALL_PATH='/opt/easytier'
+    INSTALL_PATH='/opt/sdwan'
 fi
 
 if [[ "$INSTALL_PATH" == */ ]]; then
     INSTALL_PATH=${INSTALL_PATH%?}
 fi
 
-if ! $SKIP_FOLDER_FIX && ! [[ "$INSTALL_PATH" == */easytier ]]; then
-    INSTALL_PATH="$INSTALL_PATH/easytier"
+if ! $SKIP_FOLDER_FIX && ! [[ "$INSTALL_PATH" == */sdwan ]]; then
+    INSTALL_PATH="$INSTALL_PATH/sdwan"
 fi
 
 echo INSTALL PATH : $INSTALL_PATH
@@ -106,11 +107,11 @@ if ! command -v curl >/dev/null 2>&1; then
 fi
 
 echo -e "\r\n${RED_COLOR}----------------------NOTICE----------------------${RES}\r\n"
-echo " This is a temporary script to install EasyTier "
-echo " EasyTier requires a dedicated empty folder to install"
-echo " EasyTier is a developing product and may have some issues "
-echo " Using EasyTier requires some basic skills "
-echo " You need to face the risks brought by using EasyTier at your own risk "
+echo " This is a temporary script to install SDWAN "
+echo " SDWAN requires a dedicated empty folder to install"
+echo " SDWAN is a developing product and may have some issues "
+echo " Using SDWAN requires some basic skills "
+echo " You need to face the risks brought by using SDWAN at your own risk "
 echo -e "\r\n${RED_COLOR}-------------------------------------------------${RES}\r\n"
 
 # Get platform
@@ -174,8 +175,8 @@ fi
 
 CHECK() {
   if ! $SKIP_FOLDER_VERIFY; then
-    if [ -f "$INSTALL_PATH/easytier-core" ]; then
-      echo "There is EasyTier in $INSTALL_PATH. Please choose other path or use \"update\""
+    if [ -f "$INSTALL_PATH/sdwan-core" ]; then
+      echo "There is SDWAN in $INSTALL_PATH. Please choose other path or use \"update\""
         echo -e "Or use Try ${GREEN_COLOR}--skip-folder-verify${RES} to skip"
       exit 0
     fi
@@ -187,7 +188,7 @@ CHECK() {
     # Check weather path is empty
     if ! $SKIP_FOLDER_VERIFY; then
       if [ -n "$(ls -A $INSTALL_PATH)" ]; then
-        echo "EasyTier requires to be installed in an empty directory. Please choose a empty path"
+        echo "SDWAN requires to be installed in an empty directory. Please choose a empty path"
         echo -e "Or use Try ${GREEN_COLOR}--skip-folder-verify${RES} to skip"
         echo -e "Current path: $INSTALL_PATH ( use ${GREEN_COLOR}--skip-folder-fix${RES} to disable folder fix )"
         exit 1
@@ -208,21 +209,21 @@ INSTALL() {
   fi
 
   # Download
-  echo -e "\r\n${GREEN_COLOR}Downloading EasyTier $LATEST_VERSION ...${RES}"
-  rm -rf /tmp/easytier_tmp_install.zip
-  BASE_URL="https://github.com/EasyTier/EasyTier/releases/latest/download/easytier-linux-${ARCH}-${LATEST_VERSION}.zip"
+  echo -e "\r\n${GREEN_COLOR}Downloading SDWAN $LATEST_VERSION ...${RES}"
+  rm -rf /tmp/sdwan_tmp_install.zip
+  BASE_URL="https://github.com/EasyTier/EasyTier/releases/latest/download/sdwan-linux-${ARCH}-${LATEST_VERSION}.zip"
   DOWNLOAD_URL=$($NO_GH_PROXY && echo "$BASE_URL" || echo "${GH_PROXY}${BASE_URL}")
   echo -e "Download URL: ${GREEN_COLOR}${DOWNLOAD_URL}${RES}"
-  curl -L ${DOWNLOAD_URL} -o /tmp/easytier_tmp_install.zip $CURL_BAR
+  curl -L ${DOWNLOAD_URL} -o /tmp/sdwan_tmp_install.zip $CURL_BAR
 
   # Unzip resource
   echo -e "\r\n${GREEN_COLOR}Unzip resource ...${RES}"
-  unzip -o /tmp/easytier_tmp_install.zip -d $INSTALL_PATH/
+  unzip -o /tmp/sdwan_tmp_install.zip -d $INSTALL_PATH/
   mkdir $INSTALL_PATH/config
-  mv $INSTALL_PATH/easytier-linux-${ARCH}/* $INSTALL_PATH/
-  rm -rf $INSTALL_PATH/easytier-linux-${ARCH}/
-  chmod +x $INSTALL_PATH/easytier-core $INSTALL_PATH/easytier-cli
-  if [ -f $INSTALL_PATH/easytier-core ] || [ -f $INSTALL_PATH/easytier-cli ]; then
+  mv $INSTALL_PATH/sdwan-linux-${ARCH}/* $INSTALL_PATH/
+  rm -rf $INSTALL_PATH/sdwan-linux-${ARCH}/
+  chmod +x $INSTALL_PATH/sdwan-core $INSTALL_PATH/sdwan-cli
+  if [ -f $INSTALL_PATH/sdwan-core ] || [ -f $INSTALL_PATH/sdwan-cli ]; then
     echo -e "${GREEN_COLOR} Download successfully! ${RES}"
   else
     echo -e "${RED_COLOR} Download failed! ${RES}"
@@ -231,8 +232,8 @@ INSTALL() {
 }
 
 INIT() {
-  if [ ! -f "$INSTALL_PATH/easytier-core" ]; then
-    echo -e "\r\n${RED_COLOR}Opus${RES}, unable to find EasyTier\r\n"
+  if [ ! -f "$INSTALL_PATH/sdwan-core" ]; then
+    echo -e "\r\n${RED_COLOR}Opus${RES}, unable to find SDWAN\r\n"
     exit 1
   fi
 
@@ -276,12 +277,12 @@ EOF
 
   # Create init script
   if [ "$INIT_SYSTEM" = "openrc" ]; then
-    cat >/etc/init.d/easytier <<EOF
+    cat >/etc/init.d/sdwan <<EOF
 #!/sbin/openrc-run
 
-name="EasyTier"
-description="EasyTier Service"
-command="$INSTALL_PATH/easytier-core"
+name="SDWAN"
+description="SDWAN Service"
+command="$INSTALL_PATH/sdwan-core"
 command_args="-c $INSTALL_PATH/config/default.conf"
 command_user="nobody:nobody"
 command_background=true
@@ -294,14 +295,14 @@ depend() {
 
 
 EOF
-    chmod +x /etc/init.d/easytier
+    chmod +x /etc/init.d/sdwan
   fi
 
   # Create systemd
   if [ "$INIT_SYSTEM" = "systemd" ]; then
-    cat >/etc/systemd/system/easytier@.service <<EOF
+    cat >/etc/systemd/system/sdwan@.service <<EOF
 [Unit]
-Description=EasyTier Service
+Description=SDWAN Service
 Wants=network.target
 After=network.target network.service
 StartLimitIntervalSec=0
@@ -309,7 +310,7 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 WorkingDirectory=$INSTALL_PATH
-ExecStart=$INSTALL_PATH/easytier-core -c $INSTALL_PATH/config/%i.conf
+ExecStart=$INSTALL_PATH/sdwan-core -c $INSTALL_PATH/config/%i.conf
 Restart=always
 RestartSec=1s
 
@@ -320,17 +321,17 @@ EOF
 
 #   # Create run script
 #   cat >$INSTALL_PATH/run.sh <<EOF
-# $INSTALL_PATH/easytier-core
+# $INSTALL_PATH/sdwan-core
 # EOF
 
   # Startup
   if [ "$INIT_SYSTEM" = "systemd" ]; then
     systemctl daemon-reload
-    systemctl enable easytier@default >/dev/null 2>&1
-    systemctl start easytier@default
+    systemctl enable sdwan@default >/dev/null 2>&1
+    systemctl start sdwan@default
   else
-    rc-update add easytier default
-    rc-service easytier start
+    rc-update add sdwan default
+    rc-service sdwan start
   fi
 
   # For issues from the previous version
@@ -339,94 +340,94 @@ EOF
   rm -rf /usr/bin/easytier-cli
 
   # Add link
-  ln -s $INSTALL_PATH/easytier-core /usr/sbin/easytier-core
-  ln -s $INSTALL_PATH/easytier-cli /usr/sbin/easytier-cli
+  ln -s $INSTALL_PATH/sdwan-core /usr/sbin/sdwan-core
+  ln -s $INSTALL_PATH/sdwan-cli /usr/sbin/sdwan-cli
 }
 
 SUCCESS() {
   clear
-  echo " Install EasyTier successfully!"
+  echo " Install SDWAN successfully!"
   echo -e "\r\nDefault Port: ${GREEN_COLOR}11010(UDP+TCP)${RES}, Notice allowing in firewall!\r\n"
   echo -e "Default Network Name: ${GREEN_COLOR}default${RES}, Please change it to your own network name!\r\n"
 
-  echo -e "Now EasyTier supports multiple config files. You can create config files in the ${GREEN_COLOR}${INSTALL_PATH}/config/${RES} folder"
+  echo -e "Now SDWAN supports multiple config files. You can create config files in the ${GREEN_COLOR}${INSTALL_PATH}/config/${RES} folder"
   echo -e "For more information, please check the documents in official site"
   echo -e "The management example of a single configuration file is as follows"
 
   echo
   if [ "$INIT_SYSTEM" = "systemd" ]; then
-    echo -e "Status: ${GREEN_COLOR}systemctl status easytier@default${RES}"
-    echo -e "Start: ${GREEN_COLOR}systemctl start easytier@default${RES}"
-    echo -e "Restart: ${GREEN_COLOR}systemctl restart easytier@default${RES}"
-    echo -e "Stop: ${GREEN_COLOR}systemctl stop easytier@default${RES}"
+    echo -e "Status: ${GREEN_COLOR}systemctl status sdwan@default${RES}"
+    echo -e "Start: ${GREEN_COLOR}systemctl start sdwan@default${RES}"
+    echo -e "Restart: ${GREEN_COLOR}systemctl restart sdwan@default${RES}"
+    echo -e "Stop: ${GREEN_COLOR}systemctl stop sdwan@default${RES}"
   else
-    echo -e "Status: ${GREEN_COLOR}rc-service easytier status${RES}"
-    echo -e "Start: ${GREEN_COLOR}rc-service easytier start${RES}"
-    echo -e "Restart: ${GREEN_COLOR}rc-service easytier restart${RES}"
-    echo -e "Stop: ${GREEN_COLOR}rc-service easytier stop${RES}"
+    echo -e "Status: ${GREEN_COLOR}rc-service sdwan status${RES}"
+    echo -e "Start: ${GREEN_COLOR}rc-service sdwan start${RES}"
+    echo -e "Restart: ${GREEN_COLOR}rc-service sdwan restart${RES}"
+    echo -e "Stop: ${GREEN_COLOR}rc-service sdwan stop${RES}"
   fi
   echo
 }
 
 UNINSTALL() {
-  echo -e "\r\n${GREEN_COLOR}Uninstall EasyTier ...${RES}\r\n"
+  echo -e "\r\n${GREEN_COLOR}Uninstall SDWAN ...${RES}\r\n"
   echo -e "${GREEN_COLOR}Stop process ...${RES}"
   if [ "$INIT_SYSTEM" = "systemd" ]; then
-    systemctl disable "easytier@*" >/dev/null 2>&1
-    systemctl stop "easytier@*" >/dev/null 2>&1
+    systemctl disable "sdwan@*" >/dev/null 2>&1
+    systemctl stop "sdwan@*" >/dev/null 2>&1
   else
-    rc-update del easytier
-    rc-service easytier stop
+    rc-update del sdwan
+    rc-service sdwan stop
   fi
   echo -e "${GREEN_COLOR}Delete files ...${RES}"
   if [ "$INIT_SYSTEM" = "systemd" ]; then
-    rm -rf $INSTALL_PATH /etc/systemd/system/easytier.service /usr/bin/easytier-core /usr/bin/easytier-cli /etc/systemd/system/easytier@.service /usr/sbin/easytier-core /usr/sbin/easytier-cli
+    rm -rf $INSTALL_PATH /etc/systemd/system/easytier.service /usr/bin/easytier-core /usr/bin/easytier-cli /etc/systemd/system/sdwan@.service /usr/sbin/sdwan-core /usr/sbin/sdwan-cli
     systemctl daemon-reload
   else
-    rm -rf $INSTALL_PATH /etc/init.d/easytier /usr/bin/easytier-core /usr/bin/easytier-cli /usr/sbin/easytier-core /usr/sbin/easytier-cli
+    rm -rf $INSTALL_PATH /etc/init.d/easytier /usr/bin/easytier-core /usr/bin/easytier-cli /usr/sbin/sdwan-core /usr/sbin/sdwan-cli
   fi
-  echo -e "\r\n${GREEN_COLOR}EasyTier was removed successfully! ${RES}\r\n"
+  echo -e "\r\n${GREEN_COLOR}SDWAN was removed successfully! ${RES}\r\n"
 }
 
 UPDATE() {
-  if [ ! -f "$INSTALL_PATH/easytier-core" ]; then
-    echo -e "\r\n${RED_COLOR}Opus${RES}, unable to find EasyTier\r\n"
+  if [ ! -f "$INSTALL_PATH/sdwan-core" ]; then
+    echo -e "\r\n${RED_COLOR}Opus${RES}, unable to find SDWAN\r\n"
     exit 1
   else
     echo
-    echo -e "${GREEN_COLOR}Stopping EasyTier process${RES}\r\n"
+    echo -e "${GREEN_COLOR}Stopping SDWAN process${RES}\r\n"
     if [ "$INIT_SYSTEM" = "systemd" ]; then
-      systemctl stop "easytier@*"
+      systemctl stop "sdwan@*"
     else
-      rc-service easytier stop
+      rc-service sdwan stop
     fi
     # Backup
-    rm -rf /tmp/easytier_tmp_update
-    mkdir -p  /tmp/easytier_tmp_update
-    cp -a $INSTALL_PATH/* /tmp/easytier_tmp_update/
+    rm -rf /tmp/sdwan_tmp_update
+    mkdir -p  /tmp/sdwan_tmp_update
+    cp -a $INSTALL_PATH/* /tmp/sdwan_tmp_update/
     INSTALL
-    if [ -f $INSTALL_PATH/easytier-core ]; then
+    if [ -f $INSTALL_PATH/sdwan-core ]; then
       echo -e "${GREEN_COLOR} Verify successfully ${RES}"
     else
       echo -e "${RED_COLOR} Download failed, unable to update${RES}"
       echo "Rollback all ..."
       rm -rf $INSTALL_PATH/*
-      mv /tmp/easytier_tmp_update/* $INSTALL_PATH/
+      mv /tmp/sdwan_tmp_update/* $INSTALL_PATH/
       if [ "$INIT_SYSTEM" = "systemd" ]; then
-        systemctl start "easytier@*"
+        systemctl start "sdwan@*"
       else
-        rc-service easytier start
+        rc-service sdwan start
       fi
       exit 1
     fi
-    echo -e "\r\n${GREEN_COLOR} Starting EasyTier process${RES}"
+    echo -e "\r\n${GREEN_COLOR} Starting SDWAN process${RES}"
     if [ "$INIT_SYSTEM" = "systemd" ]; then
-      systemctl start "easytier@*"
+      systemctl start "sdwan@*"
     else
-      rc-service easytier start
+      rc-service sdwan start
     fi
-    echo -e "\r\n${GREEN_COLOR} EasyTier was updated successfully! ${RES}\r\n"
-    echo -e "\r\n${GREEN_COLOR} EasyTier was the latest stable version! ${RES}\r\n"
+    echo -e "\r\n${GREEN_COLOR} SDWAN was updated successfully! ${RES}\r\n"
+    echo -e "\r\n${GREEN_COLOR} SDWAN was the latest stable version! ${RES}\r\n"
   fi
 }
 
@@ -450,7 +451,7 @@ elif [ "$COMMEND" = "install" ]; then
   CHECK
   INSTALL
   INIT
-  if [ -f "$INSTALL_PATH/easytier-core" ]; then
+  if [ -f "$INSTALL_PATH/sdwan-core" ]; then
     SUCCESS
   else
     echo -e "${RED_COLOR} Install fail, try install by hand${RES}"
@@ -461,4 +462,4 @@ else
   echo -e "\n\r${GREEN_COLOR} install, uninstall, update, help ${RES}"
 fi
 
-rm -rf /tmp/easytier_tmp_*
+rm -rf /tmp/sdwan_tmp_*

@@ -1,4 +1,4 @@
-package com.kkrainbow.easytier
+package com.zzxym.easytier
 
 import android.content.Intent
 import android.os.Build

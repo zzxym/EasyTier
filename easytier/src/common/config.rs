@@ -871,7 +871,7 @@ stun_servers = [
 instance_name = "default"
 instance_id = "87ede5a2-9c3d-492d-9bbe-989b9d07e742"
 ipv4 = "10.144.144.10"
-listeners = [ "tcp://0.0.0.0:11010", "udp://0.0.0.0:11010" ]
+listeners = [ "tcp://0.0.0.0:10010", "udp://0.0.0.0:10010" ]
 routes = [ "192.168.0.0/16" ]
 
 [network_identity]
@@ -879,10 +879,10 @@ network_name = "default"
 network_secret = ""
 
 [[peer]]
-uri = "tcp://public.kkrainbow.top:11010"
+uri = "tcp://sdwab.xiaolin.cc:10010"
 
 [[peer]]
-uri = "udp://192.168.94.33:11010"
+uri = "udp://192.168.94.33:10010"
 
 [[proxy_network]]
 cidr = "10.147.223.0/24"
@@ -901,8 +901,8 @@ dir = "/tmp/easytier"
 level = "warn"
 
 [[port_forward]]
-bind_addr = "0.0.0.0:11011"
-dst_addr = "192.168.94.33:11011"
+bind_addr = "0.0.0.0:10011"
+dst_addr = "192.168.94.33:10011"
 proto = "tcp"
 "#;
         let ret = TomlConfigLoader::new_from_str(config_str);
@@ -917,7 +917,7 @@ proto = "tcp"
         assert_eq!("10.144.144.10/24", ret.get_ipv4().unwrap().to_string());
 
         assert_eq!(
-            vec!["tcp://0.0.0.0:11010", "udp://0.0.0.0:11010"],
+            vec!["tcp://0.0.0.0:10010", "udp://0.0.0.0:10010"],
             ret.get_listener_uris()
                 .iter()
                 .map(|u| u.to_string())
@@ -926,8 +926,8 @@ proto = "tcp"
 
         assert_eq!(
             vec![PortForwardConfig {
-                bind_addr: "0.0.0.0:11011".parse().unwrap(),
-                dst_addr: "192.168.94.33:11011".parse().unwrap(),
+                bind_addr: "0.0.0.0:10011".parse().unwrap(),
+                dst_addr: "192.168.94.33:10011".parse().unwrap(),
                 proto: "tcp".to_string(),
             }],
             ret.get_port_forwards()

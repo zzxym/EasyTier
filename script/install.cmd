@@ -32,7 +32,7 @@ EXIT
 ::BATCH_END
 param(
     [Parameter(Mandatory = $false)]
-    [string]$ServiceName = "EasyTierService",
+    [string]$ServiceName = "SDWANService",
     [Parameter(Mandatory = $false)]
     [switch]$Uninstall
 )

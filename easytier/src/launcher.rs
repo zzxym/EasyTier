@@ -8,7 +8,7 @@ use crate::{
             gen_default_flags, ConfigLoader, NetworkIdentity, PeerConfig, TomlConfigLoader,
             VpnPortalConfig,
         },
-        constants::EASYTIER_VERSION,
+        constants::SDWAN_VERSION,
         global_ctx::{EventBusSubscriber, GlobalCtxEvent},
     },
     instance::instance::Instance,
@@ -374,7 +374,7 @@ impl NetworkInstance {
                     .ok()
                     .map(Into::into),
                 hostname: my_info.hostname,
-                version: EASYTIER_VERSION.to_string(),
+                version: SDWAN_VERSION.to_string(),
                 ips: my_info.ip_list,
                 stun_info: my_info.stun_info,
                 listeners: my_info

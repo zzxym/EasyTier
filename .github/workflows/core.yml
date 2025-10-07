@@ -1,4 +1,4 @@
-name: EasyTier Core
+name: SDWAN Core
 
 on:
   push:
@@ -69,7 +69,7 @@ jobs:
       - name: Archive artifact
         uses: actions/upload-artifact@v4
         with:
-          name: easytier-web-dashboard
+          name: sdwan-web-dashboard
           path: |
             easytier-web/frontend/dist/*
   build:
@@ -133,7 +133,7 @@ jobs:
 
     runs-on: ${{ matrix.OS }}
     env:
-      NAME: easytier
+      NAME: sdwan
       TARGET: ${{ matrix.TARGET }}
       OS: ${{ matrix.OS }}
       OSS_BUCKET: ${{ secrets.ALIYUN_OSS_BUCKET }}
@@ -151,7 +151,7 @@ jobs:
       - name: Download web artifact
         uses: actions/download-artifact@v4
         with:
-          name: easytier-web-dashboard
+          name: sdwan-web-dashboard
           path: easytier-web/frontend/dist/
 
       - uses: Swatinem/rust-cache@v2
@@ -263,15 +263,15 @@ jobs:
             UPX_VERSION=4.2.4
             curl -L https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -s | tar xJvf -
             cp upx-${UPX_VERSION}-amd64_linux/upx .
-            ./upx --lzma --best ./target/$TARGET/release/easytier-core"$SUFFIX"
-            ./upx --lzma --best ./target/$TARGET/release/easytier-cli"$SUFFIX"
+            ./upx --lzma --best ./target/$TARGET/release/sdwan-core"$SUFFIX"
+            ./upx --lzma --best ./target/$TARGET/release/sdwan-cli"$SUFFIX"
           fi
 
-          mv ./target/$TARGET/release/easytier-core"$SUFFIX" ./artifacts/objects/
-          mv ./target/$TARGET/release/easytier-cli"$SUFFIX" ./artifacts/objects/
+          mv ./target/$TARGET/release/sdwan-core"$SUFFIX" ./artifacts/objects/
+          mv ./target/$TARGET/release/sdwan-cli"$SUFFIX" ./artifacts/objects/
           if [[ ! $TARGET =~ ^mips.*$ ]]; then
-            mv ./target/$TARGET/release/easytier-web"$SUFFIX" ./artifacts/objects/
-            mv ./target/$TARGET/release/easytier-web-embed"$SUFFIX" ./artifacts/objects/
+            mv ./target/$TARGET/release/sdwan-web"$SUFFIX" ./artifacts/objects/
+            mv ./target/$TARGET/release/sdwan-web-embed"$SUFFIX" ./artifacts/objects/
           fi
 
           mv ./artifacts/objects/* ./artifacts/
@@ -280,7 +280,7 @@ jobs:
       - name: Archive artifact
         uses: actions/upload-artifact@v4
         with:
-          name: easytier-${{ matrix.ARTIFACT_NAME }}
+          name: sdwan-${{ matrix.ARTIFACT_NAME }}
           path: |
             ./artifacts/*
 
@@ -311,23 +311,23 @@ jobs:
       - name: Download Linux aarch64 binaries
         uses: actions/download-artifact@v4
         with:
-          name: easytier-linux-aarch64
+          name: sdwan-linux-aarch64
           path: ./downloaded-binaries/  # 独立目录避免冲突
 
       # 将二进制文件复制到 Magisk 模块目录
       - name: Prepare binaries
         run: |
           mkdir -p ./easytier-contrib/easytier-magisk/
-          cp ./downloaded-binaries/easytier-core ./easytier-contrib/easytier-magisk/
-          cp ./downloaded-binaries/easytier-cli ./easytier-contrib/easytier-magisk/
-          cp ./downloaded-binaries/easytier-web ./easytier-contrib/easytier-magisk/
+          cp ./downloaded-binaries/sdwan-core ./easytier-contrib/easytier-magisk/
+          cp ./downloaded-binaries/sdwan-cli ./easytier-contrib/easytier-magisk/
+          cp ./downloaded-binaries/sdwan-web ./easytier-contrib/easytier-magisk/
 
 
       # 上传生成的模块
       - name: Upload Magisk Module
         uses: actions/upload-artifact@v4
         with:
-          name: Easytier-Magisk
+          name: Sdwan-Magisk
           path: |
             ./easytier-contrib/easytier-magisk
             !./easytier-contrib/easytier-magisk/build.sh

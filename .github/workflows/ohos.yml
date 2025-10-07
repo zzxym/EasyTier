@@ -1,4 +1,4 @@
-name: EasyTier OHOS
+name: SDWAN OHOS
 
 on:
   push:
@@ -116,12 +116,12 @@ jobs:
           ohrs doctor
           ohrs build --release --arch aarch
           ohrs artifact
-          mv package.har easytier-ohrs.har
+          mv package.har sdwan-ohrs.har
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: easytier-ohos
-          path: ./easytier-contrib/easytier-ohrs/easytier-ohrs.har
+          name: sdwan-ohos
+          path: ./easytier-contrib/easytier-ohrs/sdwan-ohrs.har
           retention-days: 5
           if-no-files-found: error

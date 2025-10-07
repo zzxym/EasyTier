@@ -21,7 +21,7 @@ use sdwan::{
             LoggingConfigLoader, NetworkIdentity, PeerConfig, PortForwardConfig, TomlConfigLoader,
             VpnPortalConfig,
         },
-        constants::EASYTIER_VERSION,
+        constants::SDWAN_VERSION,
         global_ctx::GlobalCtx,
         set_default_machine_id,
         stun::MockStunInfoCollector,
@@ -98,19 +98,19 @@ fn dump_profile(_cur_allocated: usize) {
 }
 
 #[derive(Parser, Debug)]
-#[command(name = "easytier-core", author, version = EASYTIER_VERSION , about, long_about = None)]
+#[command(name = "sdwan-core", author, version = SDWAN_VERSION , about, long_about = None)]
 struct Cli {
     #[arg(
         short = 'w',
         long,
-        env = "ET_CONFIG_SERVER",
+        env = "SDWAN_CONFIG_SERVER",
         help = t!("core_clap.config_server").to_string()
     )]
     config_server: Option<String>,
 
     #[arg(
         long,
-        env = "ET_MACHINE_ID",
+        env = "SDWAN_MACHINE_ID",
         help = t!("core_clap.machine_id").to_string()
     )]
     machine_id: Option<String>,
@@ -118,7 +118,7 @@ struct Cli {
     #[arg(
         short,
         long,
-        env = "ET_CONFIG_FILE",
+        env = "SDWAN_CONFIG_FILE",
         value_delimiter = ',',
         help = t!("core_clap.config_file").to_string(),
         num_args = 1..,
@@ -145,7 +145,7 @@ struct Cli {
 struct NetworkOptions {
     #[arg(
         long,
-        env = "ET_NETWORK_NAME",
+        env = "SDWAN_NETWORK_NAME",
         help = t!("core_clap.network_name").to_string(),
     )]
     network_name: Option<String>,
@@ -285,7 +285,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_MULTI_THREAD",
+        env = "SDWAN_MULTI_THREAD",
         help = t!("core_clap.multi_thread").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -294,14 +294,14 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_MULTI_THREAD_COUNT",
+        env = "SDWAN_MULTI_THREAD_COUNT",
         help = t!("core_clap.multi_thread_count").to_string(),
     )]
     multi_thread_count: Option<u32>,
 
     #[arg(
         long,
-        env = "ET_DISABLE_IPV6",
+        env = "SDWAN_DISABLE_IPV6",
         help = t!("core_clap.disable_ipv6").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -310,21 +310,21 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_DEV_NAME",
+        env = "SDWAN_DEV_NAME",
         help = t!("core_clap.dev_name").to_string()
     )]
     dev_name: Option<String>,
 
     #[arg(
         long,
-        env = "ET_MTU",
+        env = "SDWAN_MTU",
         help = t!("core_clap.mtu").to_string()
     )]
     mtu: Option<u16>,
 
     #[arg(
         long,
-        env = "ET_LATENCY_FIRST",
+        env = "SDWAN_LATENCY_FIRST",
         help = t!("core_clap.latency_first").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -333,7 +333,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_EXIT_NODES",
+        env = "SDWAN_EXIT_NODES",
         value_delimiter = ',',
         help = t!("core_clap.exit_nodes").to_string(),
         num_args = 0..
@@ -342,7 +342,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_ENABLE_EXIT_NODE",
+        env = "SDWAN_ENABLE_EXIT_NODE",
         help = t!("core_clap.enable_exit_node").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -351,7 +351,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_PROXY_FORWARD_BY_SYSTEM",
+        env = "SDWAN_PROXY_FORWARD_BY_SYSTEM",
         help = t!("core_clap.proxy_forward_by_system").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -360,7 +360,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_NO_TUN",
+        env = "SDWAN_NO_TUN",
         help = t!("core_clap.no_tun").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -369,7 +369,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_USE_SMOLTCP",
+        env = "SDWAN_USE_SMOLTCP",
         help = t!("core_clap.use_smoltcp").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -378,7 +378,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_MANUAL_ROUTES",
+        env = "SDWAN_MANUAL_ROUTES",
         value_delimiter = ',',
         help = t!("core_clap.manual_routes").to_string(),
         num_args = 0..
@@ -390,7 +390,7 @@ struct NetworkOptions {
     // for local virtual network, will refuse relaying tun packet
     #[arg(
         long,
-        env = "ET_RELAY_NETWORK_WHITELIST",
+        env = "SDWAN_RELAY_NETWORK_WHITELIST",
         value_delimiter = ',',
         help = t!("core_clap.relay_network_whitelist").to_string(),
         num_args = 0..
@@ -399,7 +399,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_DISABLE_P2P",
+        env = "SDWAN_DISABLE_P2P",
         help = t!("core_clap.disable_p2p").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -408,7 +408,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_DISABLE_UDP_HOLE_PUNCHING",
+        env = "SDWAN_DISABLE_UDP_HOLE_PUNCHING",
         help = t!("core_clap.disable_udp_hole_punching").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -417,7 +417,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_DISABLE_SYM_HOLE_PUNCHING",
+        env = "SDWAN_DISABLE_SYM_HOLE_PUNCHING",
         help = t!("core_clap.disable_sym_hole_punching").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -426,7 +426,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_RELAY_ALL_PEER_RPC",
+        env = "SDWAN_RELAY_ALL_PEER_RPC",
         help = t!("core_clap.relay_all_peer_rpc").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -436,28 +436,28 @@ struct NetworkOptions {
     #[cfg(feature = "socks5")]
     #[arg(
         long,
-        env = "ET_SOCKS5",
+        env = "SDWAN_SOCKS5",
         help = t!("core_clap.socks5").to_string()
     )]
     socks5: Option<u16>,
 
     #[arg(
         long,
-        env = "ET_COMPRESSION",
+        env = "SDWAN_COMPRESSION",
         help = t!("core_clap.compression").to_string(),
     )]
     compression: Option<String>,
 
     #[arg(
         long,
-        env = "ET_BIND_DEVICE",
+        env = "SDWAN_BIND_DEVICE",
         help = t!("core_clap.bind_device").to_string()
     )]
     bind_device: Option<bool>,
 
     #[arg(
         long,
-        env = "ET_ENABLE_KCP_PROXY",
+        env = "SDWAN_ENABLE_KCP_PROXY",
         help = t!("core_clap.enable_kcp_proxy").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -466,7 +466,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_DISABLE_KCP_INPUT",
+        env = "SDWAN_DISABLE_KCP_INPUT",
         help = t!("core_clap.disable_kcp_input").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -475,7 +475,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_ENABLE_QUIC_PROXY",
+        env = "SDWAN_ENABLE_QUIC_PROXY",
         help = t!("core_clap.enable_quic_proxy").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -484,7 +484,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_DISABLE_QUIC_INPUT",
+        env = "SDWAN_DISABLE_QUIC_INPUT",
         help = t!("core_clap.disable_quic_input").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -493,7 +493,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_PORT_FORWARD",
+        env = "SDWAN_PORT_FORWARD",
         value_delimiter = ',',
         help = t!("core_clap.port_forward").to_string(),
         num_args = 1..
@@ -502,27 +502,27 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_ACCEPT_DNS",
+        env = "SDWAN_ACCEPT_DNS",
         help = t!("core_clap.accept_dns").to_string(),
     )]
     accept_dns: Option<bool>,
 
     #[arg(
         long = "tld-dns-zone",
-        env = "ET_TLD_DNS_ZONE",
+        env = "SDWAN_TLD_DNS_ZONE",
         help = t!("core_clap.tld_dns_zone").to_string())]
     tld_dns_zone: Option<String>,
 
     #[arg(
         long,
-        env = "ET_PRIVATE_MODE",
+        env = "SDWAN_PRIVATE_MODE",
         help = t!("core_clap.private_mode").to_string(),
     )]
     private_mode: Option<bool>,
 
     #[arg(
         long,
-        env = "ET_FOREIGN_RELAY_BPS_LIMIT",
+        env = "SDWAN_FOREIGN_RELAY_BPS_LIMIT",
         help = t!("core_clap.foreign_relay_bps_limit").to_string(),
     )]
     foreign_relay_bps_limit: Option<u64>,
@@ -545,7 +545,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_DISABLE_RELAY_KCP",
+        env = "SDWAN_DISABLE_RELAY_KCP",
         help = t!("core_clap.disable_relay_kcp").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -554,7 +554,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_ENABLE_RELAY_FOREIGN_NETWORK_KCP",
+        env = "SDWAN_ENABLE_RELAY_FOREIGN_NETWORK_KCP",
         help = t!("core_clap.enable_relay_foreign_network_kcp").to_string(),
         num_args = 0..=1,
         default_missing_value = "true"
@@ -563,7 +563,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_STUN_SERVERS",
+        env = "SDWAN_STUN_SERVERS",
         value_delimiter = ',',
         help = t!("core_clap.stun_servers").to_string(),
         num_args = 0..
@@ -572,7 +572,7 @@ struct NetworkOptions {
 
     #[arg(
         long,
-        env = "ET_STUN_SERVERS_V6",
+        env = "SDWAN_STUN_SERVERS_V6",
         value_delimiter = ',',
         help = t!("core_clap.stun_servers_v6").to_string(),
         num_args = 0..
@@ -584,35 +584,35 @@ struct NetworkOptions {
 struct LoggingOptions {
     #[arg(
         long,
-        env = "ET_CONSOLE_LOG_LEVEL",
+        env = "SDWAN_CONSOLE_LOG_LEVEL",
         help = t!("core_clap.console_log_level").to_string()
     )]
     console_log_level: Option<String>,
 
     #[arg(
         long,
-        env = "ET_FILE_LOG_LEVEL",
+        env = "SDWAN_FILE_LOG_LEVEL",
         help = t!("core_clap.file_log_level").to_string()
     )]
     file_log_level: Option<String>,
 
     #[arg(
         long,
-        env = "ET_FILE_LOG_DIR",
+        env = "SDWAN_FILE_LOG_DIR",
         help = t!("core_clap.file_log_dir").to_string()
     )]
     file_log_dir: Option<String>,
 
     #[arg(
         long,
-        env = "ET_FILE_LOG_SIZE",
+        env = "SDWAN_FILE_LOG_SIZE",
         help = t!("core_clap.file_log_size_mb").to_string()
     )]
     file_log_size: Option<u64>,
 
     #[arg(
         long,
-        env = "ET_FILE_LOG_COUNT",
+        env = "SDWAN_FILE_LOG_COUNT",
         help = t!("core_clap.file_log_count").to_string()
     )]
     file_log_count: Option<usize>,
@@ -623,14 +623,14 @@ struct RpcPortalOptions {
     #[arg(
         short,
         long,
-        env = "ET_RPC_PORTAL",
+        env = "SDWAN_RPC_PORTAL",
         help = t!("core_clap.rpc_portal").to_string(),
     )]
     rpc_portal: Option<String>,
 
     #[arg(
         long,
-        env = "ET_RPC_PORTAL_WHITELIST",
+        env = "SDWAN_RPC_PORTAL_WHITELIST",
         value_delimiter = ',',
         help = t!("core_clap.rpc_portal_whitelist").to_string(),
     )]

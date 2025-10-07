@@ -753,7 +753,7 @@ const handleResize = () => {
                             </div>
 
                             <!-- 版本徽章 -->
-                            <div class="text-xs version-badge" v-tooltip="`EasyTier ${device.easytier_version}`">
+                            <div class="text-xs version-badge" v-tooltip="`SDWAN ${device.easytier_version}`">
                                 v{{ device.easytier_version.split('-')[0] }}
                             </div>
                         </div>

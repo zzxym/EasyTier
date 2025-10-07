@@ -41,5 +41,5 @@ export async function setTunFd(instanceId: string, fd: number) {
 }
 
 export async function getEasytierVersion() {
-  return await invoke<string>('easytier_version')
+  return await invoke<string>('sdwan_version')
 }

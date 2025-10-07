@@ -9,17 +9,17 @@ if [ -z "$version" ]; then
     exit 1
 fi
 
-filename="easytier_magisk_${version}.zip"
+filename="sdwan_magisk_${version}.zip"
 echo $version  
 
 
-if [ -f "./easytier-core" ] && [ -f "./easytier-cli" ] && [ -f "./easytier-web" ]; then
+if [ -f "./sdwan-core" ] && [ -f "./sdwan-cli" ] && [ -f "./sdwan-web" ]; then
     zip -r -o -X "$filename" ./ -x '.git/*' -x '.github/*' -x 'folder/*' -x 'build.sh' -x 'magisk_update.json'
 else
-    wget -O "easytier_last.zip" https://github.com/EasyTier/EasyTier/releases/download/"$version"/easytier-linux-aarch64-"$version".zip
-    unzip -o easytier_last.zip -d ./
-    mv ./easytier-linux-aarch64/* ./
-    rm -rf ./easytier_last.zip
-    rm -rf ./easytier-linux-aarch64
+    wget -O "sdwan_last.zip" https://github.com/EasyTier/EasyTier/releases/download/"$version"/sdwan-linux-aarch64-"$version".zip
+    unzip -o sdwan_last.zip -d ./
+    mv ./sdwan-linux-aarch64/* ./
+    rm -rf ./sdwan_last.zip
+    rm -rf ./sdwan-linux-aarch64
     zip -r -o -X "$filename" ./ -x '.git/*' -x '.github/*' -x 'folder/*' -x 'build.sh' -x 'magisk_update.json'
 fi

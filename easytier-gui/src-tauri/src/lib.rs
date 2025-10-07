@@ -26,7 +26,7 @@ static mut LOGGER_LEVEL_SENDER: once_cell::sync::Lazy<Option<NewFilterSender>> =
     once_cell::sync::Lazy::new(Default::default);
 
 #[tauri::command]
-fn easytier_version() -> Result<String, String> {
+fn sdwan_version() -> Result<String, String> {
     Ok(sdwan::VERSION.to_string())
 }
 
@@ -263,7 +263,7 @@ pub fn run() {
             set_logging_level,
             set_tun_fd,
             is_autostart,
-            easytier_version,
+            sdwan_version,
             set_dock_visibility
         ])
         .on_window_event(|_win, event| match event {

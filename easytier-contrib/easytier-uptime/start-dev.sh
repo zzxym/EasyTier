@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# EasyTier Uptime Monitor 开发环境启动脚本
+# SDWAN Uptime Monitor 开发环境启动脚本
 
 set -e
 
-echo "🚀 Starting EasyTier Uptime Monitor Development Environment..."
+echo "🚀 Starting SDWAN Uptime Monitor Development Environment..."
 
 # 检查依赖
 echo "📦 Checking dependencies..."

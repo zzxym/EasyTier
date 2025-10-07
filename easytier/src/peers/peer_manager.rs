@@ -21,7 +21,7 @@ use tokio::{
 use crate::{
     common::{
         compressor::{Compressor as _, DefaultCompressor},
-        constants::EASYTIER_VERSION,
+        constants::SDWAN_VERSION,
         error::Error,
         global_ctx::{ArcGlobalCtx, NetworkIdentity},
         stats_manager::{CounterHandle, LabelSet, LabelType, MetricName},
@@ -1336,7 +1336,7 @@ impl PeerManager {
                 .map(|x| x.to_string())
                 .collect(),
             config: self.global_ctx.config.dump(),
-            version: EASYTIER_VERSION.to_string(),
+            version: SDWAN_VERSION.to_string(),
             feature_flag: Some(self.global_ctx.get_feature_flags()),
             ip_list: Some(self.global_ctx.get_ip_collector().collect_ip_addrs().await),
         }

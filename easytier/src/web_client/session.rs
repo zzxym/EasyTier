@@ -7,7 +7,7 @@ use tokio::{
 };
 
 use crate::{
-    common::{constants::EASYTIER_VERSION, get_machine_id},
+    common::{constants::SDWAN_VERSION, get_machine_id},
     proto::{
         api::manage::WebClientServiceServer,
         rpc_impl::bidirect::BidirectRpcManager,
@@ -91,7 +91,7 @@ impl Session {
                     inst_id: Some(inst_id.into()),
                     user_token: token.to_string(),
 
-                    easytier_version: EASYTIER_VERSION.to_string(),
+                    easytier_version: SDWAN_VERSION.to_string(),
                     hostname: hostname.clone(),
                     report_time: chrono::Local::now().to_rfc3339(),
 
