@@ -1,12 +1,12 @@
 [package]
-name = "easytier-rpc-build"
-description = "Protobuf RPC Service Generator for EasyTier"
+name = "sdwan-rpc-build"
+description = "Protobuf RPC Service Generator for SDWAN"
 version = "0.1.0"
 edition = "2021"
 homepage = "https://github.com/EasyTier/EasyTier"
 repository = "https://github.com/EasyTier/EasyTier"
 authors = ["kkrainbow"]
-keywords = ["vpn", "p2p", "network", "easytier"]
+keywords = ["vpn", "p2p", "network", "sdwan"]
 categories = ["network-programming", "command-line-utilities"]
 rust-version = "1.89.0"
 license-file = "LICENSE"

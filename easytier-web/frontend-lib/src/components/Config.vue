@@ -26,6 +26,8 @@ const curNetwork = defineModel('curNetwork', {
 
 const { t } = useI18n()
 
+const showNetworkingMethod = ref(false) // 控制网络方式部分的显示与隐藏
+
 const networking_methods = ref([
   { value: NetworkingMethod.PublicServer, label: () => t('public_server') },
   { value: NetworkingMethod.Manual, label: () => t('manual') },
@@ -216,20 +218,36 @@ const portForwardProtocolOptions = ref(["tcp", "udp"]);
                 </div>
               </div>
 
-              <div class="flex flex-row gap-x-9 flex-wrap">
+              <div v-if="showNetworkingMethod" class="flex flex-row gap-x-9 flex-wrap">
                 <div class="flex flex-col gap-2 basis-5/12 grow">
                   <label for="nm">{{ t('networking_method') }}</label>
                   <SelectButton v-model="curNetwork.networking_method" :options="networking_methods"
                     :option-label="(v) => v.label()" option-value="value" />
                   <div class="items-center flex flex-row p-fluid gap-x-1">
                     <AutoComplete v-if="curNetwork.networking_method === NetworkingMethod.Manual" id="chips"
-                      v-model="curNetwork.peer_urls" :placeholder="t('chips_placeholder', ['tcp://8.8.8.8:10010'])"
-                      class="grow" multiple fluid :suggestions="peerSuggestions" @complete="searchPeerSuggestions" />
+                      v-model="curNetwork.peer_urls" :placeholder="t('chips_placeholder', ['tcp://8.8.8.8:10010'])" class="grow" multiple fluid :suggestions="peerSuggestions" @complete="searchPeerSuggestions" />
 
                     <AutoComplete v-if="curNetwork.networking_method === NetworkingMethod.PublicServer"
                       v-model="curNetwork.public_server_url" :suggestions="publicServerSuggestions" class="grow"
                       dropdown :complete-on-focus="false" @complete="searchPresetPublicServers" />
                   </div>
+                </div>
+              </div>
+
+              <div class="flex flex-row gap-x-9 flex-wrap">
+                <div class="flex flex-col gap-2 basis-3/12 grow">
+                  <label for="hostname">{{ t('hostname') }}</label>
+                  <InputText id="hostname" v-model="curNetwork.hostname" aria-describedby="hostname-help" :format="true"
+                    :placeholder="t('hostname_placeholder', [props.hostname])" />
+                </div>
+              </div>
+
+              <div class="flex flex-row gap-x-9 flex-wrap w-full">
+                <div class="flex flex-col gap-2 grow p-fluid">
+                  <label for="username">{{ t('proxy_cidrs') }}</label>
+                  <AutoComplete id="subnet-proxy" v-model="curNetwork.proxy_cidrs"
+                    :placeholder="t('chips_placeholder', ['10.0.0.0/24'])" class="w-full" multiple fluid
+                    :suggestions="inetSuggestions" @complete="searchInetSuggestions" />
                 </div>
               </div>
             </div>
@@ -255,23 +273,7 @@ const portForwardProtocolOptions = ref(["tcp", "udp"]);
                 </div>
               </div>
 
-              <div class="flex flex-row gap-x-9 flex-wrap">
-                <div class="flex flex-col gap-2 basis-5/12 grow">
-                  <label for="hostname">{{ t('hostname') }}</label>
-                  <InputText id="hostname" v-model="curNetwork.hostname" aria-describedby="hostname-help" :format="true"
-                    :placeholder="t('hostname_placeholder', [props.hostname])" />
-                </div>
-              </div>
-
-              <div class="flex flex-row gap-x-9 flex-wrap w-full">
-                <div class="flex flex-col gap-2 grow p-fluid">
-                  <label for="username">{{ t('proxy_cidrs') }}</label>
-                  <AutoComplete id="subnet-proxy" v-model="curNetwork.proxy_cidrs"
-                    :placeholder="t('chips_placeholder', ['10.0.0.0/24'])" class="w-full" multiple fluid
-                    :suggestions="inetSuggestions" @complete="searchInetSuggestions" />
-                </div>
-              </div>
-
+              
               <div class="flex flex-row gap-x-9 flex-wrap ">
                 <div class="flex flex-col gap-2 grow">
                   <label for="username">VPN Portal</label>

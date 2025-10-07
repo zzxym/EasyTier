@@ -81,11 +81,12 @@ export function DEFAULT_NETWORK_CONFIG(): NetworkConfig {
     network_length: 24,
     network_name: 'xlxx',
     network_secret: 'Aa123456',
-
-    networking_method: NetworkingMethod.PublicServer,
+// 网络方式默认手动
+networking_method: NetworkingMethod.Manual,
 
     public_server_url: 'tcp://sdwan.xiaolin.cc:10010',
-    peer_urls: [],
+// 手动模式下默认的对端节点的URL
+    peer_urls: ['tcp://sdwan.xiaolin.cc:10010','udp://sdwan.xiaolin.cc:10010','tcp://oa.xiaolin.cc:10010','udp://oa.xiaolin.cc:10010'],
 
     proxy_cidrs: [],
 

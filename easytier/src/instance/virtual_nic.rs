@@ -418,7 +418,7 @@ impl VirtualNic {
                     .collect::<String>()
                     .to_lowercase();
 
-                let random_dev_name = format!("et_{}_{}", c, s);
+                let random_dev_name = format!("xlxx_{}_{}", c, s);
                 config.tun_name(random_dev_name.clone());
 
                 let mut flags = self.global_ctx.get_flags();
