@@ -5,7 +5,7 @@ mod elevate;
 
 use std::collections::BTreeMap;
 
-use easytier::{
+use sdwan::{
     common::config::{ConfigLoader, FileLoggerConfig, LoggingConfigBuilder, TomlConfigLoader},
     instance_manager::NetworkInstanceManager,
     launcher::{ConfigSource, NetworkConfig, NetworkInstanceRunningInfo},
@@ -27,7 +27,7 @@ static mut LOGGER_LEVEL_SENDER: once_cell::sync::Lazy<Option<NewFilterSender>> =
 
 #[tauri::command]
 fn easytier_version() -> Result<String, String> {
-    Ok(easytier::VERSION.to_string())
+    Ok(sdwan::VERSION.to_string())
 }
 
 #[tauri::command]
