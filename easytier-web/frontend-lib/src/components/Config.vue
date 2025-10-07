@@ -32,7 +32,7 @@ const networking_methods = ref([
   { value: NetworkingMethod.Standalone, label: () => t('standalone') },
 ])
 
-const protos: { [proto: string]: number } = { tcp: 11010, udp: 11010, wg: 11011, ws: 11011, wss: 11012 }
+const protos: { [proto: string]: number } = { tcp: 10010, udp: 10010, wg: 10011, ws: 10011, wss: 10012 }
 
 function searchUrlSuggestions(e: { query: string }): string[] {
   const query = e.query
@@ -65,7 +65,7 @@ const publicServerSuggestions = ref([''])
 
 function searchPresetPublicServers(e: { query: string }) {
   const presetPublicServers = [
-    'tcp://public.easytier.top:11010',
+    'tcp://sdwan.xiaolin.cc:10010',
   ]
 
   const query = e.query
@@ -223,7 +223,7 @@ const portForwardProtocolOptions = ref(["tcp", "udp"]);
                     :option-label="(v) => v.label()" option-value="value" />
                   <div class="items-center flex flex-row p-fluid gap-x-1">
                     <AutoComplete v-if="curNetwork.networking_method === NetworkingMethod.Manual" id="chips"
-                      v-model="curNetwork.peer_urls" :placeholder="t('chips_placeholder', ['tcp://8.8.8.8:11010'])"
+                      v-model="curNetwork.peer_urls" :placeholder="t('chips_placeholder', ['tcp://8.8.8.8:10010'])"
                       class="grow" multiple fluid :suggestions="peerSuggestions" @complete="searchPeerSuggestions" />
 
                     <AutoComplete v-if="curNetwork.networking_method === NetworkingMethod.PublicServer"
@@ -302,7 +302,7 @@ const portForwardProtocolOptions = ref(["tcp", "udp"]);
                   <label for="listener_urls">{{ t('listener_urls') }}</label>
                   <AutoComplete id="listener_urls" v-model="curNetwork.listener_urls" :suggestions="listenerSuggestions"
                     class="w-full" dropdown :complete-on-focus="true"
-                    :placeholder="t('chips_placeholder', ['tcp://1.1.1.1:11010'])" multiple
+                    :placeholder="t('chips_placeholder', ['tcp://1.1.1.1:10010'])" multiple
                     @complete="searchListenerSuggestions" />
                 </div>
               </div>
