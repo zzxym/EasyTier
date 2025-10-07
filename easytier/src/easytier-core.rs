@@ -14,7 +14,7 @@ use anyhow::Context;
 use cidr::IpCidr;
 use clap::{CommandFactory, Parser};
 use clap_complete::Shell;
-use easytier::{
+use sdwan::{
     common::{
         config::{
             get_avaliable_encrypt_methods, ConfigLoader, ConsoleLoggerConfig, FileLoggerConfig,
@@ -994,7 +994,7 @@ impl LoggingConfigLoader for &LoggingOptions {
 
 #[cfg(target_os = "windows")]
 fn win_service_set_work_dir(service_name: &std::ffi::OsString) -> anyhow::Result<()> {
-    use easytier::common::constants::WIN_SERVICE_WORK_DIR_REG_KEY;
+    use sdwan::common::constants::WIN_SERVICE_WORK_DIR_REG_KEY;
     use winreg::enums::*;
     use winreg::RegKey;
 
@@ -1313,7 +1313,7 @@ async fn main() -> ExitCode {
 
     if let Some(shell) = cli.gen_autocomplete {
         let mut cmd = Cli::command();
-        easytier::print_completions(shell, &mut cmd, "easytier-core");
+        sdwan::print_completions(shell, &mut cmd, "sdwan-core");
         return ExitCode::SUCCESS;
     }
 

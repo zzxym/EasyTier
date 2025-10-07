@@ -1,4 +1,4 @@
-use easytier::proto::api::manage::{NetworkInstanceRunningInfo, NetworkInstanceRunningInfoMap};
+use sdwan::proto::api::manage::{NetworkInstanceRunningInfo, NetworkInstanceRunningInfoMap};
 use jni::objects::{JClass, JObjectArray, JString};
 use jni::sys::{jint, jstring};
 use jni::JNIEnv;

@@ -249,7 +249,7 @@ impl ClientManager {
 mod tests {
     use std::{sync::Arc, time::Duration};
 
-    use easytier::{
+    use sdwan::{
         instance_manager::NetworkInstanceManager,
         tunnel::{
             common::tests::wait_for_condition,

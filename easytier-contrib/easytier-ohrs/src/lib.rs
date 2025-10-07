@@ -1,8 +1,8 @@
 mod native_log;
 
-use easytier::common::config::{ConfigLoader, TomlConfigLoader};
-use easytier::instance_manager::NetworkInstanceManager;
-use easytier::launcher::ConfigSource;
+use sdwan::common::config::{ConfigLoader, TomlConfigLoader};
+use sdwan::instance_manager::NetworkInstanceManager;
+use sdwan::launcher::ConfigSource;
 use napi_derive_ohos::napi;
 use ohos_hilog_binding::{hilog_debug, hilog_error};
 use std::format;

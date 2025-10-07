@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 
 use dashmap::DashMap;
-use easytier::{
+use sdwan::{
     common::config::{ConfigLoader as _, TomlConfigLoader},
     instance_manager::NetworkInstanceManager,
     launcher::ConfigSource,

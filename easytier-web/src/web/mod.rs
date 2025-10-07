@@ -5,7 +5,7 @@ use axum::{
     routing, Router,
 };
 use axum_embed::ServeEmbed;
-use easytier::common::scoped_task::ScopedTask;
+use sdwan::common::scoped_task::ScopedTask;
 use rust_embed::RustEmbed;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;

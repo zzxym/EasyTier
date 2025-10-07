@@ -6,7 +6,7 @@ use std::{
 
 use anyhow::Context as _;
 use dashmap::DashMap;
-use easytier::{
+use sdwan::{
     common::{
         config::{ConfigLoader, NetworkIdentity, PeerConfig, TomlConfigLoader},
         scoped_task::ScopedTask,

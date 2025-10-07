@@ -19,7 +19,7 @@ use service_manager::*;
 use tabled::settings::Style;
 use tokio::time::timeout;
 
-use easytier::{
+use sdwan::{
     common::{
         constants::EASYTIER_VERSION,
         stun::{StunInfoCollector, StunInfoCollectorTrait},
@@ -600,7 +600,7 @@ impl CommandHandler<'_> {
                     cidr: route.ipv4_addr.map(|ip| ip.to_string()).unwrap_or_default(),
                     ipv4: route
                         .ipv4_addr
-                        .map(|ip: easytier::proto::common::Ipv4Inet| ip.address.unwrap_or_default())
+                        .map(|ip: sdwan::proto::common::Ipv4Inet| ip.address.unwrap_or_default())
                         .map(|ip| ip.to_string())
                         .unwrap_or_default(),
                     hostname: route.hostname.clone(),
@@ -2219,7 +2219,7 @@ async fn main() -> Result<(), Error> {
         },
         SubCommand::GenAutocomplete { shell } => {
             let mut cmd = Cli::command();
-            easytier::print_completions(shell, &mut cmd, "easytier-cli");
+            sdwan::print_completions(shell, &mut cmd, "sdwan-cli");
         }
     }
 
@@ -2244,7 +2244,7 @@ mod win_service_manager {
 
     use winreg::{enums::*, RegKey};
 
-    use easytier::common::constants::WIN_SERVICE_WORK_DIR_REG_KEY;
+    use sdwan::common::constants::WIN_SERVICE_WORK_DIR_REG_KEY;
 
     use serde::{Deserialize, Serialize};
 
