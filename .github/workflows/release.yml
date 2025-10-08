@@ -4,19 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       core_run_id:
-        description: 'The run id of SDWAN-Core Action in SDWAN repo'
+        description: 'The run id of Core Action in this repo'
         type: number
-        default: 18339767435
+        default: 0
         required: true
       gui_run_id:
-        description: 'The run id of SDWAN-GUI Action in SDWAN repo'
+        description: 'The run id of GUI Action in this repo'
         type: number
-        default: 18339767392
+        default: 0
         required: true
       mobile_run_id:
-        description: 'The run id of SDWAN-Mobile Action in SDWAN repo'
+        description: 'The run id of Mobile Action in this repo'
         type: number
-        default: 18339767408
+        default: 0
         required: true
       version:
         description: 'Version for this release'
@@ -42,52 +42,134 @@ jobs:
         name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download Core Artifact
+      - name: Download Core Artifact - Linux x86_64
         uses: dawidd6/action-download-artifact@v11
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.core_run_id }}
-          repo: zzxym/SDWAN
-          path: release_assets
+          repo: zzxym/EasyTier
+          name: sdwan-linux-x86_64
+          path: release_assets/linux-x86_64
+          check_artifacts: false
+          if_no_artifact_found: warn
 
-      - name: Download GUI Artifact
+
+      - name: Download Core Artifact - Linux aarch64
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          run_id: ${{ inputs.core_run_id }}
+          repo: zzxym/EasyTier
+          name: sdwan-linux-aarch64
+          path: release_assets/linux-aarch64
+          check_artifacts: false
+          if_no_artifact_found: warn
+
+      - name: Download Core Artifact - Linux armv7hf
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          run_id: ${{ inputs.core_run_id }}
+          repo: zzxym/EasyTier
+          name: sdwan-linux-armv7hf
+          path: release_assets/linux-armv7hf
+          check_artifacts: false
+          if_no_artifact_found: warn
+
+      - name: Download Core Artifact - Web Dashboard
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          run_id: ${{ inputs.core_run_id }}
+          repo: zzxym/EasyTier
+          name: sdwan-web-dashboard
+          path: release_assets/web-dashboard
+          check_artifacts: false
+          if_no_artifact_found: warn
+
+      - name: Download Core Artifact - Magisk Module
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          run_id: ${{ inputs.core_run_id }}
+          repo: zzxym/EasyTier
+          name: Sdwan-Magisk
+          path: release_assets/magisk
+          check_artifacts: false
+          if_no_artifact_found: warn
+
+      - name: Download GUI Artifact - Linux x86_64
         uses: dawidd6/action-download-artifact@v11
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.gui_run_id }}
-          repo: zzxym/SDWAN
-          path: release_assets_nozip
+          repo: zzxym/EasyTier
+          name: sdwan-gui-linux-x86_64
+          path: release_assets_nozip/gui-linux-x86_64
+          check_artifacts: false
+          if_no_artifact_found: warn
 
-      - name: Download Mobile Artifact
+      - name: Download GUI Artifact - Windows x86_64
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          run_id: ${{ inputs.gui_run_id }}
+          repo: zzxym/EasyTier
+          name: sdwan-gui-windows-x86_64
+          path: release_assets_nozip/gui-windows-x86_64
+          check_artifacts: false
+          if_no_artifact_found: warn
+
+      - name: Download GUI Artifact - MacOS x86_64
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          run_id: ${{ inputs.gui_run_id }}
+          repo: zzxym/EasyTier
+          name: sdwan-gui-macos-x86_64
+          path: release_assets_nozip/gui-macos-x86_64
+          check_artifacts: false
+          if_no_artifact_found: warn
+
+      - name: Download Mobile Artifact - Android
         uses: dawidd6/action-download-artifact@v11
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.mobile_run_id }}
-          repo: zzxym/SDWAN
-          path: release_assets_nozip
+          repo: zzxym/EasyTier
+          name: sdwan-gui-android
+          path: release_assets_nozip/android
+          check_artifacts: false
+          if_no_artifact_found: warn
 
       - name: Zip release assets
         env:
           VERSION: ${{ inputs.version }}
         run: |
-          mkdir zipped_assets
-
-          find release_assets_nozip -type f -exec mv {} zipped_assets \;
-          ls -l -R ./zipped_assets
-
+          mkdir -p zipped_assets
+          
+          # Copy all GUI and Mobile artifacts directly to zipped_assets
+          find release_assets_nozip -type f -exec cp {} zipped_assets/ \;
+          
+          # Process Core artifacts
           cd release_assets
-          ls -l -R ./
-          chmod -R 755 .
-          for x in `ls`; do
-            if [ "$x" = "Easytier-Magisk" ]; then
-              # for Easytier-Magisk, make sure files are in the root of the zip
-              cd $x;
-              zip -r ../../zipped_assets/$x-${VERSION}.zip .;
-              cd ..;
-            else
-              zip -r ../zipped_assets/$x-${VERSION}.zip $x;
+          
+          # Create zip files for each platform
+          for platform in linux-x86_64 linux-aarch64 linux-armv7hf web-dashboard magisk; do
+            if [ -d "$platform" ]; then
+              cd "$platform"
+              if [ "$platform" = "magisk" ]; then
+                # For Magisk module, make sure files are in the root of the zip
+                zip -r ../../zipped_assets/sdwan-magisk-${VERSION}.zip .
+              else
+                zip -r ../../zipped_assets/sdwan-${platform}-${VERSION}.zip .
+              fi
+              cd ..
             fi
           done
+          
+          # List all files for debugging
+          ls -la ../zipped_assets
 
       - name: Release
         uses: softprops/action-gh-release@v2
