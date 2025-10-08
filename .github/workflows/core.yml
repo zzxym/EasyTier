@@ -186,7 +186,8 @@ jobs:
           fi
 
           if [[ $OS =~ ^ubuntu.*$ && $TARGET =~ ^mips.*$ ]]; then
-            cargo +nightly-2025-09-01 build -r --target $TARGET -Z build-std=std,panic_abort --package=easytier --features=jemalloc
+            # 使用环境变量中的RUSTFLAGS来传递特性，避免"cannot specify features for packages outside of workspace"错误
+            cargo +nightly-2025-09-01 build -r --target $TARGET -Z build-std=std,panic_abort --package=easytier
           else
             if [[ $OS =~ ^windows.*$ ]]; then
               SUFFIX=.exe
