@@ -6,17 +6,17 @@ on:
       core_run_id:
         description: 'The run id of SDWAN-Core Action in EasyTier repo'
         type: number
-        default: 10322498549
+        default: 18339767435
         required: true
       gui_run_id:
         description: 'The run id of SDWAN-GUI Action in EasyTier repo'
         type: number
-        default: 10322498557
+        default: 18339767392
         required: true
       mobile_run_id:
         description: 'The run id of SDWAN-Mobile Action in EasyTier repo'
         type: number
-        default: 10322498555
+        default: 18339767408
         required: true
       version:
         description: 'Version for this release'
