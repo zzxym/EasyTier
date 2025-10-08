@@ -69,7 +69,7 @@ jobs:
       - name: Zip release assets
         env:
           VERSION: ${{ inputs.version }}
-        run:
+        run: |
           mkdir zipped_assets
 
           find release_assets_nozip -type f -exec mv {} zipped_assets \;
