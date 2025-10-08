@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Card, useToast } from 'primevue';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { Api, Utils } from 'easytier-frontend-lib';
+import { Api, Utils } from 'sdwan-frontend-lib';
 
 const props = defineProps({
     api: Api.ApiClient,

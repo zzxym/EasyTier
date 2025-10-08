@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { I18nUtils } from 'easytier-frontend-lib'
+import { I18nUtils } from 'sdwan-frontend-lib'
 import { onMounted } from 'vue';
 import { Toast, DynamicDialog } from 'primevue';
 

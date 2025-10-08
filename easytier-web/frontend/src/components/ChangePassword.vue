@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, inject, ref } from 'vue';
 import { Card, Password, Button } from 'primevue';
-import { Api } from 'easytier-frontend-lib';
+import { Api } from 'sdwan-frontend-lib';
 
 const dialogRef = inject<any>('dialogRef');
 

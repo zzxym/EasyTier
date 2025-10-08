@@ -1,12 +1,12 @@
 import { createApp } from 'vue'
-import 'easytier-frontend-lib/style.css'
+import 'sdwan-frontend-lib/style.css'
 import './style.css'
 import App from './App.vue'
-import EasytierFrontendLib from 'easytier-frontend-lib'
+import EasytierFrontendLib from 'sdwan-frontend-lib'
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura';
 import ConfirmationService from 'primevue/confirmationservice';
-import { I18nUtils } from 'easytier-frontend-lib'
+import { I18nUtils } from 'sdwan-frontend-lib'
 
 import { createRouter, createWebHashHistory } from 'vue-router'
 import MainPage from './components/MainPage.vue'

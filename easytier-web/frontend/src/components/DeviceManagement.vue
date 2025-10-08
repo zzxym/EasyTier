@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { IftaLabel, Select, Button, ConfirmPopup, useConfirm, useToast, Divider, Menu } from 'primevue';
-import { NetworkTypes, Status, Utils, Api, ConfigEditDialog } from 'easytier-frontend-lib';
+import { NetworkTypes, Status, Utils, Api, ConfigEditDialog } from 'sdwan-frontend-lib';
 import { watch, computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'

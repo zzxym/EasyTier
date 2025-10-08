@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { NetworkTypes } from 'easytier-frontend-lib';
+import { NetworkTypes } from 'sdwan-frontend-lib';
 import { computed, ref } from 'vue';
-import { Api } from 'easytier-frontend-lib'
+import { Api } from 'sdwan-frontend-lib'
 import { AutoComplete, Divider, Button, Textarea } from "primevue";
 import { getInitialApiHost, cleanAndLoadApiHosts, saveApiHost } from "../modules/api-host"
 

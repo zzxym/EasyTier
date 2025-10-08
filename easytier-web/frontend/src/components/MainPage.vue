@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Api, I18nUtils } from 'easytier-frontend-lib'
+import { Api, I18nUtils } from 'sdwan-frontend-lib'
 import { computed, onMounted, ref, onUnmounted, nextTick } from 'vue';
 import { Button, TieredMenu } from 'primevue';
 import { useRoute, useRouter } from 'vue-router';

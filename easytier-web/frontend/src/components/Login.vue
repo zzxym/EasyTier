@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import { Card, InputText, Password, Button, AutoComplete } from 'primevue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import { Api, I18nUtils } from 'easytier-frontend-lib';
+import { Api, I18nUtils } from 'sdwan-frontend-lib';
 import { getInitialApiHost, cleanAndLoadApiHosts, saveApiHost } from "../modules/api-host"
 import { useI18n } from 'vue-i18n'
 
