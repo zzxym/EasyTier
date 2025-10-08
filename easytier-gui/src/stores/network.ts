@@ -1,4 +1,4 @@
-import { NetworkTypes } from 'easytier-frontend-lib'
+import { NetworkTypes } from 'sdwan-frontend-lib'
 
 export const useNetworkStore = defineStore('networkStore', {
   state: () => {

@@ -1,4 +1,4 @@
-import type { NetworkTypes } from 'easytier-frontend-lib'
+import type { NetworkTypes } from 'sdwan-frontend-lib'
 import { invoke } from '@tauri-apps/api/core'
 
 type NetworkConfig = NetworkTypes.NetworkConfig

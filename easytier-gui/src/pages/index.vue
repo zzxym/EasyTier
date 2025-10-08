@@ -8,7 +8,7 @@ import { exit } from '@tauri-apps/plugin-process'
 import { open } from '@tauri-apps/plugin-shell'
 import TieredMenu from 'primevue/tieredmenu'
 import { useToast } from 'primevue/usetoast'
-import { NetworkTypes, Config, Status, Utils, I18nUtils, ConfigEditDialog } from 'easytier-frontend-lib'
+import { NetworkTypes, Config, Status, Utils, I18nUtils, ConfigEditDialog } from 'sdwan-frontend-lib'
 
 import { isAutostart, setLoggingLevel } from '~/composables/network'
 import { useTray } from '~/composables/tray'

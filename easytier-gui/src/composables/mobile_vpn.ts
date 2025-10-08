@@ -1,6 +1,6 @@
-import type { NetworkTypes } from 'easytier-frontend-lib'
+import type { NetworkTypes } from 'sdwan-frontend-lib'
 import { addPluginListener } from '@tauri-apps/api/core'
-import { Utils } from 'easytier-frontend-lib'
+import { Utils } from 'sdwan-frontend-lib'
 import { prepare_vpn, start_vpn, stop_vpn } from 'tauri-plugin-vpnservice-api'
 
 type Route = NetworkTypes.Route

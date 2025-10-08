@@ -5,11 +5,11 @@ import ToastService from 'primevue/toastservice'
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { routes } from 'vue-router/auto-routes'
 import App from '~/App.vue'
-import EasyTierFrontendLib, { I18nUtils } from 'easytier-frontend-lib'
+import EasyTierFrontendLib, { I18nUtils } from 'sdwan-frontend-lib'
 
 import { getAutoLaunchStatusAsync, loadAutoLaunchStatusAsync } from './modules/auto_launch'
 import '~/styles.css'
-import 'easytier-frontend-lib/style.css'
+import 'sdwan-frontend-lib/style.css'
 
 if (import.meta.env.PROD) {
   document.addEventListener('keydown', (event) => {

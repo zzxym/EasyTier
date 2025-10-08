@@ -22,7 +22,7 @@ export async function useTray(init: boolean = false) {
     if (!tray) {
       tray = await TrayIcon.new({
         title: `SDWAN\n${pkg.version}`,
-    tooltip: `SDWAN\n${pkg.version}`,","},{"old_str":
+        tooltip: `SDWAN\n${pkg.version}`,
         id: DEFAULT_TRAY_NAME,
         menu: await Menu.new({
           id: 'main',
