@@ -45,10 +45,12 @@ if [[ $OS =~ ^ubuntu.*$ && $TARGET =~ ^mips.*$ ]]; then
     ar rcs libctz.a _ctzsi2.o _clz.o _bswapsi2.o
 
     # 修复 cannot specify features for packages outside of workspace 错误
-    # 尝试使用不同的方式安装rust-src组件
+    # 1. 安装nightly工具链
     rustup toolchain install nightly-2025-09-01-x86_64-unknown-linux-gnu
-    # 移除可能导致问题的特性指定方式
+    # 2. 安装rust-src组件
     rustup component add rust-src --toolchain nightly-2025-09-01-x86_64-unknown-linux-gnu
+    # 3. 配置环境变量以避免工作区问题
+    echo "RUSTFLAGS=--cfg=feature\"\\\"jemalloc\\\"\"" >> $GITHUB_ENV
 
     # https://github.com/rust-lang/rust/issues/128808
     # remove it after Cargo or rustc fix this.
