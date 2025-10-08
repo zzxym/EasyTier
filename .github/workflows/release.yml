@@ -4,17 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       core_run_id:
-        description: 'The run id of SDWAN-Core Action in EasyTier repo'
+        description: 'The run id of SDWAN-Core Action in SDWAN repo'
         type: number
         default: 18339767435
         required: true
       gui_run_id:
-        description: 'The run id of SDWAN-GUI Action in EasyTier repo'
+        description: 'The run id of SDWAN-GUI Action in SDWAN repo'
         type: number
         default: 18339767392
         required: true
       mobile_run_id:
-        description: 'The run id of SDWAN-Mobile Action in EasyTier repo'
+        description: 'The run id of SDWAN-Mobile Action in SDWAN repo'
         type: number
         default: 18339767408
         required: true
@@ -48,7 +48,6 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.core_run_id }}
           repo: zzxym/SDWAN
-          artifact_name: easytier-core
           path: release_assets
 
       - name: Download GUI Artifact
@@ -57,7 +56,6 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.gui_run_id }}
           repo: zzxym/SDWAN
-          artifact_name: easytier-gui
           path: release_assets_nozip
 
       - name: Download Mobile Artifact
@@ -66,7 +64,6 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.mobile_run_id }}
           repo: zzxym/SDWAN
-          artifact_name: easytier-mobile
           path: release_assets_nozip
 
       - name: Zip release assets
@@ -82,8 +79,8 @@ jobs:
           ls -l -R ./
           chmod -R 755 .
           for x in `ls`; do
-            if [ "$x" = "Sdwan-Magisk" ]; then
-              # for Sdwan-Magisk, make sure files are in the root of the zip
+            if [ "$x" = "Easytier-Magisk" ]; then
+              # for Easytier-Magisk, make sure files are in the root of the zip
               cd $x;
               zip -r ../../zipped_assets/$x-${VERSION}.zip .;
               cd ..;
