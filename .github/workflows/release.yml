@@ -48,6 +48,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.core_run_id }}
           repo: zzxym/SDWAN
+          artifact_name: easytier-core
           path: release_assets
 
       - name: Download GUI Artifact
@@ -56,6 +57,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.gui_run_id }}
           repo: zzxym/SDWAN
+          artifact_name: easytier-gui
           path: release_assets_nozip
 
       - name: Download Mobile Artifact
@@ -64,6 +66,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.mobile_run_id }}
           repo: zzxym/SDWAN
+          artifact_name: easytier-mobile
           path: release_assets_nozip
 
       - name: Zip release assets
