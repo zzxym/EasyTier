@@ -4,6 +4,10 @@ version = "2.4.5"
 edition = "2021"
 description = "Config server for easytier. easytier-core gets config from this and web frontend use it as restful api server."
 
+[[bin]]
+name = "sdwan-web"
+path = "src/main.rs"
+
 [dependencies]
 sdwan = { path = "../easytier" }
 tracing = { version = "0.1", features = ["log"] }
