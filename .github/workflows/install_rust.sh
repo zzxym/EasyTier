@@ -44,8 +44,11 @@ if [[ $OS =~ ^ubuntu.*$ && $TARGET =~ ^mips.*$ ]]; then
     ar x libgcc.a _ctzsi2.o _clz.o _bswapsi2.o
     ar rcs libctz.a _ctzsi2.o _clz.o _bswapsi2.o
 
+    # 修复 cannot specify features for packages outside of workspace 错误
+    # 先安装基本组件，然后再单独处理rust-src
     rustup toolchain install nightly-2025-09-01-x86_64-unknown-linux-gnu
-    rustup component add rust-src --toolchain nightly-2025-09-01-x86_64-unknown-linux-gnu
+    # 使用--allow-downgrade参数避免特性指定问题
+    rustup component add rust-src --toolchain nightly-2025-09-01-x86_64-unknown-linux-gnu --allow-downgrade
 
     # https://github.com/rust-lang/rust/issues/128808
     # remove it after Cargo or rustc fix this.
