@@ -131,17 +131,15 @@ jobs:
 
       - name: Compress
         run: |
-          mkdir -p ./artifacts/objects/
-          mv easytier-gui/src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk ./artifacts/objects/
+          mkdir -p ./artifacts
+          # 使用find命令查找所有生成的APK文件
+          find easytier-gui/src-tauri/gen/android -name "*.apk" -type f -exec mv {} ./artifacts/ \;
           
           if [[ $GITHUB_REF_TYPE =~ ^tag$ ]]; then
             TAG=$GITHUB_REF_NAME
           else
             TAG=$GITHUB_SHA
           fi
-
-          mv ./artifacts/objects/* ./artifacts
-          rm -rf ./artifacts/objects/
 
       - name: Archive artifact
         uses: actions/upload-artifact@v4
