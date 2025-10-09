@@ -204,6 +204,11 @@ const portForwardProtocolOptions = ref(["tcp", "udp"]);
                       class="max-w-20" />
                   </InputGroup>
                 </div>
+                <div class="flex flex-col gap-2 basis-3/12 grow">
+                  <label for="hostname">{{ t('hostname') }}</label>
+                  <InputText id="hostname" v-model="curNetwork.hostname" aria-describedby="hostname-help" :format="true"
+                    :placeholder="t('hostname_placeholder', [props.hostname])" />
+                </div>
               </div>
 
               <div class="flex flex-row gap-x-9 flex-wrap">
@@ -215,6 +220,15 @@ const portForwardProtocolOptions = ref(["tcp", "udp"]);
                   <label for="network_secret">{{ t('network_secret') }}</label>
                   <Password id="network_secret" v-model="curNetwork.network_secret"
                     aria-describedby="network_secret-help" toggleMask :feedback="false" />
+                </div>
+              </div>
+
+              <div class="flex flex-row gap-x-9 flex-wrap w-full">
+                <div class="flex flex-col gap-2 grow p-fluid">
+                  <label for="username">{{ t('proxy_cidrs') }}</label>
+                  <AutoComplete id="subnet-proxy" v-model="curNetwork.proxy_cidrs"
+                    :placeholder="t('chips_placeholder', ['10.0.0.0/24'])" class="w-full" multiple fluid
+                    :suggestions="inetSuggestions" @complete="searchInetSuggestions" />
                 </div>
               </div>
 
@@ -231,23 +245,6 @@ const portForwardProtocolOptions = ref(["tcp", "udp"]);
                       v-model="curNetwork.public_server_url" :suggestions="publicServerSuggestions" class="grow"
                       dropdown :complete-on-focus="false" @complete="searchPresetPublicServers" />
                   </div>
-                </div>
-              </div>
-
-              <div class="flex flex-row gap-x-9 flex-wrap">
-                <div class="flex flex-col gap-2 basis-3/12 grow">
-                  <label for="hostname">{{ t('hostname') }}</label>
-                  <InputText id="hostname" v-model="curNetwork.hostname" aria-describedby="hostname-help" :format="true"
-                    :placeholder="t('hostname_placeholder', [props.hostname])" />
-                </div>
-              </div>
-
-              <div class="flex flex-row gap-x-9 flex-wrap w-full">
-                <div class="flex flex-col gap-2 grow p-fluid">
-                  <label for="username">{{ t('proxy_cidrs') }}</label>
-                  <AutoComplete id="subnet-proxy" v-model="curNetwork.proxy_cidrs"
-                    :placeholder="t('chips_placeholder', ['10.0.0.0/24'])" class="w-full" multiple fluid
-                    :suggestions="inetSuggestions" @complete="searchInetSuggestions" />
                 </div>
               </div>
             </div>
