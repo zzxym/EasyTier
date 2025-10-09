@@ -70,7 +70,7 @@ jobs:
 
     runs-on: ${{ matrix.OS }}
     env:
-      NAME: sdwan
+      NAME: easytier
       TARGET: ${{ matrix.TARGET }}
       OS: ${{ matrix.OS }}
       GUI_TARGET: ${{ matrix.GUI_TARGET }}
@@ -213,7 +213,7 @@ jobs:
       - name: Archive artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sdwan-gui-${{ matrix.ARTIFACT_NAME }}
+          name: easytier-gui-${{ matrix.ARTIFACT_NAME }}
           path: |
             ./artifacts/*
 

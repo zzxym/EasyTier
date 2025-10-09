@@ -69,7 +69,7 @@ jobs:
       - name: Archive artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sdwan-web-dashboard
+          name: easytier-web-dashboard
           path: |
             easytier-web/frontend/dist/*
   build:
@@ -133,7 +133,7 @@ jobs:
 
     runs-on: ${{ matrix.OS }}
     env:
-      NAME: sdwan
+      NAME: easytier
       TARGET: ${{ matrix.TARGET }}
       OS: ${{ matrix.OS }}
       OSS_BUCKET: ${{ secrets.ALIYUN_OSS_BUCKET }}
@@ -151,7 +151,7 @@ jobs:
       - name: Download web artifact
         uses: actions/download-artifact@v4
         with:
-          name: sdwan-web-dashboard
+          name: easytier-web-dashboard
           path: easytier-web/frontend/dist/
 
       - uses: Swatinem/rust-cache@v2
@@ -187,7 +187,7 @@ jobs:
 
           if [[ $OS =~ ^ubuntu.*$ && $TARGET =~ ^mips.*$ ]]; then
             # 使用环境变量中的RUSTFLAGS来传递特性，避免"cannot specify features for packages outside of workspace"错误
-              cargo +nightly-2025-09-01 build -r --target $TARGET -Z build-std=std,panic_abort --package=sdwan
+              cargo +nightly-2025-09-01 build -r --target $TARGET -Z build-std=std,panic_abort --package=easytier
           else
             if [[ $OS =~ ^windows.*$ ]]; then
               SUFFIX=.exe
@@ -198,7 +198,7 @@ jobs:
               CORE_FEATURES="--features=jemalloc"
             fi
             cargo build --release --target $TARGET --package=easytier-web --features=embed
-            mv ./target/$TARGET/release/sdwan-web"$SUFFIX" ./target/$TARGET/release/sdwan-web-embed"$SUFFIX"
+            mv ./target/$TARGET/release/easytier-web"$SUFFIX" ./target/$TARGET/release/easytier-web-embed"$SUFFIX"
             cargo build --release --target $TARGET $CORE_FEATURES
           fi
 
@@ -237,7 +237,7 @@ jobs:
             export CARGO_TERM_COLOR=always
 
             cargo build --release --verbose --target $TARGET --package=easytier-web --features=embed
-            mv ./target/$TARGET/release/sdwan-web ./target/$TARGET/release/sdwan-web-embed
+            mv ./target/$TARGET/release/easytier-web ./target/$TARGET/release/easytier-web-embed
             cargo build --release --verbose --target $TARGET --features=mimalloc
 
       - name: Compress
@@ -264,15 +264,15 @@ jobs:
             UPX_VERSION=4.2.4
             curl -L https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -s | tar xJvf -
             cp upx-${UPX_VERSION}-amd64_linux/upx .
-            ./upx --lzma --best ./target/$TARGET/release/sdwan-core"$SUFFIX"
-            ./upx --lzma --best ./target/$TARGET/release/sdwan-cli"$SUFFIX"
+            ./upx --lzma --best ./target/$TARGET/release/easytier-core"$SUFFIX"
+            ./upx --lzma --best ./target/$TARGET/release/easytier-cli"$SUFFIX"
           fi
 
-          mv ./target/$TARGET/release/sdwan-core"$SUFFIX" ./artifacts/objects/
-          mv ./target/$TARGET/release/sdwan-cli"$SUFFIX" ./artifacts/objects/
+          mv ./target/$TARGET/release/easytier-core"$SUFFIX" ./artifacts/objects/
+          mv ./target/$TARGET/release/easytier-cli"$SUFFIX" ./artifacts/objects/
           if [[ ! $TARGET =~ ^mips.*$ ]]; then
-            mv ./target/$TARGET/release/sdwan-web"$SUFFIX" ./artifacts/objects/
-            mv ./target/$TARGET/release/sdwan-web-embed"$SUFFIX" ./artifacts/objects/
+            mv ./target/$TARGET/release/easytier-web"$SUFFIX" ./artifacts/objects/
+            mv ./target/$TARGET/release/easytier-web-embed"$SUFFIX" ./artifacts/objects/
           fi
 
           mv ./artifacts/objects/* ./artifacts/
@@ -281,7 +281,7 @@ jobs:
       - name: Archive artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sdwan-${{ matrix.ARTIFACT_NAME }}
+          name: easytier-${{ matrix.ARTIFACT_NAME }}
           path: |
             ./artifacts/*
 
@@ -312,23 +312,23 @@ jobs:
       - name: Download Linux aarch64 binaries
         uses: actions/download-artifact@v4
         with:
-          name: sdwan-linux-aarch64
+          name: easytier-linux-aarch64
           path: ./downloaded-binaries/  # 独立目录避免冲突
 
       # 将二进制文件复制到 Magisk 模块目录
       - name: Prepare binaries
         run: |
           mkdir -p ./easytier-contrib/easytier-magisk/
-          cp ./downloaded-binaries/sdwan-core ./easytier-contrib/easytier-magisk/
-          cp ./downloaded-binaries/sdwan-cli ./easytier-contrib/easytier-magisk/
-          cp ./downloaded-binaries/sdwan-web ./easytier-contrib/easytier-magisk/
+          cp ./downloaded-binaries/easytier-core ./easytier-contrib/easytier-magisk/
+          cp ./downloaded-binaries/easytier-cli ./easytier-contrib/easytier-magisk/
+          cp ./downloaded-binaries/easytier-web ./easytier-contrib/easytier-magisk/
 
 
       # 上传生成的模块
       - name: Upload Magisk Module
         uses: actions/upload-artifact@v4
         with:
-          name: Sdwan-Magisk
+          name: EasyTier-Magisk
           path: |
             ./easytier-contrib/easytier-magisk
             !./easytier-contrib/easytier-magisk/build.sh

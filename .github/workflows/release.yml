@@ -48,7 +48,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.core_run_id }}
           repo: zzxym/EasyTier
-          name: sdwan-linux-x86_64
+          name: easytier-linux-x86_64
           path: release_assets/linux-x86_64
           check_artifacts: false
           if_no_artifact_found: warn
@@ -60,7 +60,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.core_run_id }}
           repo: zzxym/EasyTier
-          name: sdwan-linux-aarch64
+          name: easytier-linux-aarch64
           path: release_assets/linux-aarch64
           check_artifacts: false
           if_no_artifact_found: warn
@@ -71,7 +71,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.core_run_id }}
           repo: zzxym/EasyTier
-          name: sdwan-linux-armv7hf
+          name: easytier-linux-armv7hf
           path: release_assets/linux-armv7hf
           check_artifacts: false
           if_no_artifact_found: warn
@@ -82,7 +82,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.core_run_id }}
           repo: zzxym/EasyTier
-          name: sdwan-web-dashboard
+          name: easytier-web-dashboard
           path: release_assets/web-dashboard
           check_artifacts: false
           if_no_artifact_found: warn
@@ -93,7 +93,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.core_run_id }}
           repo: zzxym/EasyTier
-          name: Sdwan-Magisk
+          name: EasyTier-Magisk
           path: release_assets/magisk
           check_artifacts: false
           if_no_artifact_found: warn
@@ -104,7 +104,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.gui_run_id }}
           repo: zzxym/EasyTier
-          name: sdwan-gui-linux-x86_64
+          name: easytier-gui-linux-x86_64
           path: release_assets_nozip/gui-linux-x86_64
           check_artifacts: false
           if_no_artifact_found: warn
@@ -115,7 +115,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.gui_run_id }}
           repo: zzxym/EasyTier
-          name: sdwan-gui-windows-x86_64
+          name: easytier-gui-windows-x86_64
           path: release_assets_nozip/gui-windows-x86_64
           check_artifacts: false
           if_no_artifact_found: warn
@@ -126,7 +126,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.gui_run_id }}
           repo: zzxym/EasyTier
-          name: sdwan-gui-macos-x86_64
+          name: easytier-gui-macos-x86_64
           path: release_assets_nozip/gui-macos-x86_64
           check_artifacts: false
           if_no_artifact_found: warn
@@ -137,7 +137,7 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           run_id: ${{ inputs.mobile_run_id }}
           repo: zzxym/EasyTier
-          name: sdwan-gui-android
+          name: easytier-gui-android
           path: release_assets_nozip/android
           check_artifacts: false
           if_no_artifact_found: warn
@@ -160,9 +160,9 @@ jobs:
               cd "$platform"
               if [ "$platform" = "magisk" ]; then
                 # For Magisk module, make sure files are in the root of the zip
-                zip -r ../../zipped_assets/sdwan-magisk-${VERSION}.zip .
+                zip -r ../../zipped_assets/easytier-magisk-${VERSION}.zip .
               else
-                zip -r ../../zipped_assets/sdwan-${platform}-${VERSION}.zip .
+                zip -r ../../zipped_assets/easytier-${platform}-${VERSION}.zip .
               fi
               cd ..
             fi
