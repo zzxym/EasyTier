@@ -5,6 +5,12 @@ on:
     branches: ["develop", "main", "releases/**"]
   pull_request:
     branches: ["develop", "main"]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'
+        required: true
+        default: 'main'
       
 env:
   CARGO_TERM_COLOR: always
@@ -48,6 +54,8 @@ jobs:
     if: needs.pre_job.outputs.should_skip != 'true'    
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
 
       - name: Set current ref as env variable
         run: |
@@ -154,3 +162,4 @@ jobs:
       - name: Mark result as failed
         if: needs.build-mobile.result != 'success'
         run: exit 1
+
