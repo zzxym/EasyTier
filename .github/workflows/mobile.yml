@@ -49,6 +49,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: 清理临时文件和旧缓存，释放磁盘空间
+        run: |
+          # 清理系统临时文件
+          sudo rm -rf /tmp/* /var/tmp/*
+          # 清理Docker缓存（如果存在）
+          docker system prune -f 2>/dev/null || true
+          # 清理旧的Rust缓存
+          rm -rf ~/.cargo/registry/index/* ~/.cargo/registry/cache/* 2>/dev/null || true
+          # 清理旧的Android构建缓存
+          rm -rf ~/.gradle/caches/* 2>/dev/null || true
+          # 清理Windows相关依赖（Android构建不需要）
+          rm -rf ~/.cargo/registry/src/*/windows-* 2>/dev/null || true
+          # 显示当前磁盘使用情况
+          df -h
+
       - name: Set current ref as env variable
         run: |
           echo "GIT_DESC=$(git log -1 --format=%cd.%h --date=format:%Y-%m-%d_%H:%M:%S)" >> $GITHUB_ENV
@@ -97,12 +112,21 @@ jobs:
         run: |
           pnpm -r install
           pnpm -r build
+          # 显示依赖安装后的磁盘使用情况
+          df -h
 
       - uses: Swatinem/rust-cache@v2
         with:
-          # The prefix cache key, this can be changed to start a new cache manually.
-          # default: "v0-rust"
-          prefix-key: ""
+          # 优化缓存配置，减少磁盘使用
+          prefix-key: "mobile-"
+          # 排除不必要的缓存文件
+          cache-targets: true
+          # 限制缓存大小
+          cache-size: "512MB"
+          # 只缓存当前构建需要的目标
+          targets: "aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android"
+          # 排除Windows相关依赖（因为这是Android构建）
+          exclude: "**/windows*"
 
       - name: Install rust target
         run: |
@@ -118,10 +142,18 @@ jobs:
           # GitHub repo token to use to avoid rate limiter
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: 构建前检查磁盘空间
+        run: |
+          df -h
+          # 显示当前目录大小
+          du -sh .
+
       - name: Build Android
         run: |
           cd easytier-gui
           pnpm tauri android build
+          # 显示构建过程中的磁盘使用情况
+          df -h
 
       - name: Compress
         run: |
@@ -143,6 +175,16 @@ jobs:
           name: easytier-gui-${{ matrix.ARTIFACT_NAME }}
           path: |
             ./artifacts/*
+
+      - name: 构建后清理，释放磁盘空间
+        run: |
+          # 清理构建产物
+          rm -rf easytier-gui/src-tauri/target
+          rm -rf ~/.cargo/registry/tmp/*
+          # 清理PNPM缓存
+          pnpm store prune
+          # 再次显示磁盘使用情况
+          df -h
 
   mobile-result:
     if: needs.pre_job.outputs.should_skip != 'true' && always()

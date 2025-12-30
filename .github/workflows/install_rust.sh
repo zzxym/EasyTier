@@ -31,8 +31,18 @@ fi
 
 # see https://github.com/rust-lang/rustup/issues/3709
 rustup set auto-self-update disable
+# 安装Rust并优化配置
 rustup install 1.89
 rustup default 1.89
+# 配置Cargo以减少磁盘使用
+rustup config set profile minimal
+# 配置Cargo不下载文档
+cargo config --global net.git-fetch-with-cli true
+cargo config --global build.target-dir ./target
+# 配置Cargo使用较小的并发下载数
+cargo config --global net.concurrency 2
+# 清理旧的Rust工具链
+rustup toolchain list | grep -v "1.89" | xargs -r rustup toolchain uninstall -y
 
 # mips/mipsel cannot add target from rustup, need compile by ourselves
 if [[ $OS =~ ^ubuntu.*$ && $TARGET =~ ^mips.*$ ]]; then
