@@ -72,7 +72,7 @@ macro_rules! get_client_manager {
 }
 
 #[tauri::command]
-fn easytier_version() -> Result<String, String> {
+fn sdwan_version() -> Result<String, String> {
     Ok(easytier::VERSION.to_string())
 }
 
@@ -1150,7 +1150,7 @@ pub fn run_gui() -> std::process::ExitCode {
             collect_network_info,
             set_logging_level,
             set_tun_fd,
-            easytier_version,
+            sdwan_version,
             set_dock_visibility,
             list_network_instance_ids,
             remove_network_instance,

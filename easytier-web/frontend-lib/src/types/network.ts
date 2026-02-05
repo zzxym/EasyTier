@@ -81,13 +81,18 @@ export function DEFAULT_NETWORK_CONFIG(): NetworkConfig {
     dhcp: true,
     virtual_ipv4: '',
     network_length: 24,
-    network_name: 'easytier',
-    network_secret: '',
+    network_name: 'xlxxadmin',
+    network_secret: 'Aa123456',
 
-    networking_method: NetworkingMethod.PublicServer,
+    networking_method: NetworkingMethod.Manual,
 
-    public_server_url: 'tcp://public.easytier.top:11010',
-    peer_urls: [],
+    public_server_url: '',
+    peer_urls: [
+      'tcp://sdwan.xiaolin.cc:10010',
+      'udp://sdwan.xiaolin.cc:10010',
+      'tcp://oa.xiaolin.cc:10010',
+      'udp://oa.xiaolin.cc:10010'
+    ],
 
     proxy_cidrs: [],
 
@@ -100,17 +105,16 @@ export function DEFAULT_NETWORK_CONFIG(): NetworkConfig {
 
     listener_urls: [
       'tcp://0.0.0.0:11010',
-      'udp://0.0.0.0:11010',
-      'wg://0.0.0.0:11011',
+      'udp://0.0.0.0:11010'
     ],
-    latency_first: false,
+    latency_first: true,
     dev_name: '',
 
-    use_smoltcp: false,
+    use_smoltcp: true,
     disable_ipv6: false,
-    enable_kcp_proxy: false,
+    enable_kcp_proxy: true,
     disable_kcp_input: false,
-    enable_quic_proxy: false,
+    enable_quic_proxy: true,
     disable_quic_input: false,
     disable_p2p: false,
     p2p_only: false,

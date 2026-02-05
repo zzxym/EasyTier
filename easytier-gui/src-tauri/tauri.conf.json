@@ -16,9 +16,9 @@
     ],
     "createUpdaterArtifacts": false
   },
-  "productName": "easytier-gui",
+  "productName": "sdwan-gui",
   "version": "2.5.0",
-  "identifier": "com.kkrainbow.easytier",
+  "identifier": "com.kkrainbow.sdwan",
   "plugins": {
     "shell": {
       "open": "^.+"
@@ -27,7 +27,7 @@
   "app": {
     "windows": [
       {
-        "title": "easytier-gui",
+        "title": "sdwan-gui",
         "width": 800,
         "height": 600
       }

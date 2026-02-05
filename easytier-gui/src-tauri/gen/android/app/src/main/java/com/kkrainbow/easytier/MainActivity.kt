@@ -1,4 +1,4 @@
-package com.kkrainbow.easytier
+package com.kkrainbow.sdwan
 
 import android.content.Intent
 import android.os.Build

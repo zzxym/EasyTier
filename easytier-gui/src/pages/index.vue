@@ -327,13 +327,6 @@ const setting_menu_items: Ref<MenuItem[]> = ref([
     items: [], // Keep this to show it's a parent menu
   },
   {
-    label: () => t('about.title'),
-    icon: 'pi pi-at',
-    command: async () => {
-      aboutVisible.value = true
-    },
-  },
-  {
     label: () => t('exit'),
     icon: 'pi pi-power-off',
     command: async () => {
@@ -344,16 +337,16 @@ const setting_menu_items: Ref<MenuItem[]> = ref([
 
 async function connectRpcClient(isNormalMode: boolean, url?: string) {
   await initRpcConnection(isNormalMode, url)
-  console.log("easytier rpc connection established, isNormalMode: ", isNormalMode)
+  console.log("sdwan rpc connection established, isNormalMode: ", isNormalMode)
 }
 
 onMounted(async () => {
   if (type() === 'android') {
     try {
       await initMobileVpnService()
-      console.error("easytier init vpn service done")
+      console.error("sdwan init vpn service done")
     } catch (e: any) {
-      console.error("easytier init vpn service failed", e)
+      console.error("sdwan init vpn service failed", e)
     }
   }
   const unlisten = await listenGlobalEvents()

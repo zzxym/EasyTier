@@ -1,4 +1,4 @@
-package com.kkrainbow.easytier
+package com.kkrainbow.sdwan
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -12,7 +12,7 @@ import android.util.Log
 
 class MainForegroundService : Service() {
     companion object {
-        const val CHANNEL_ID = "easytier_channel"
+        const val CHANNEL_ID = "sdwan_channel"
         const val NOTIFICATION_ID = 1355
         // You can add more constants if needed
     }
@@ -24,8 +24,8 @@ class MainForegroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("easytier Running")
-            .setContentText("easytier is available on localhost")
+            .setContentTitle("SDWAN Running")
+            .setContentText("SDWAN is available on localhost")
             .setSmallIcon(android.R.drawable.ic_menu_manage)
             .build()
        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -51,7 +51,7 @@ class MainForegroundService : Service() {
           try {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "easytier notice",
+                "SDWAN notice",
                 NotificationManager.IMPORTANCE_DEFAULT
             )
             val manager = getSystemService(NotificationManager::class.java)

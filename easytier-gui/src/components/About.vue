@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { getEasytierVersion } from '~/composables/backend'
+import { getSdwanVersion } from '~/composables/backend'
 
 const { t } = useI18n()
 
 const etVersion = ref('')
 
 onMounted(async () => {
-  etVersion.value = await getEasytierVersion()
+  etVersion.value = await getSdwanVersion()
 })
 </script>
 
 <template>
   <Card>
     <template #title>
-      Easytier - {{ t('about.version') }}: {{ etVersion }}
+      SDWAN - {{ t('about.version') }}: {{ etVersion }}
     </template>
     <template #content>
       <p class="mb-1">

@@ -1,7 +1,7 @@
 [package]
-name = "easytier-gui"
+name = "sdwan-gui"
 version = "2.5.0"
-description = "EasyTier GUI"
+description = "SDWAN GUI"
 authors = ["you"]
 edition = "2021"
 

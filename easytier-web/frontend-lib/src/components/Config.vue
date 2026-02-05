@@ -261,28 +261,22 @@ onMounted(() => {
                 </div>
               </div>
 
-              <div class="flex flex-row gap-x-9 flex-wrap">
-                <div class="flex flex-col gap-2 basis-5/12 grow">
-                  <label for="nm">{{ t('networking_method') }}</label>
-                  <SelectButton v-model="curNetwork.networking_method" :options="networking_methods"
-                    :option-label="(v) => v.label()" option-value="value" />
-                  <div class="items-center flex flex-row p-fluid gap-x-1">
-                    <AutoComplete v-if="curNetwork.networking_method === NetworkingMethod.Manual" id="chips"
-                      v-model="curNetwork.peer_urls" :placeholder="t('chips_placeholder', ['tcp://8.8.8.8:11010'])"
-                      class="grow" multiple fluid :suggestions="peerSuggestions" @complete="searchPeerSuggestions" />
-
-                    <AutoComplete v-if="curNetwork.networking_method === NetworkingMethod.PublicServer"
-                      v-model="curNetwork.public_server_url" :suggestions="publicServerSuggestions" class="grow"
-                      dropdown :complete-on-focus="false" @complete="searchPresetPublicServers" />
-                  </div>
+              <div class="flex flex-row gap-x-9 flex-wrap w-full">
+                <div class="flex flex-col gap-2 grow p-fluid">
+                  <label for="username">{{ t('proxy_cidrs') }}</label>
+                  <AutoComplete id="subnet-proxy" v-model="curNetwork.proxy_cidrs"
+                    :placeholder="t('chips_placeholder', ['10.0.0.0/24'])" class="w-full" multiple fluid
+                    :suggestions="inetSuggestions" @complete="searchInetSuggestions" />
                 </div>
               </div>
+
+
             </div>
           </Panel>
 
           <Divider />
 
-          <Panel :header="t('advanced_settings')" toggleable collapsed>
+          <Panel v-if="false" :header="t('advanced_settings')" toggleable collapsed>
             <div class="flex flex-col gap-y-2">
 
               <div class="flex flex-row gap-x-9 flex-wrap">

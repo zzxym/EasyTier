@@ -40,8 +40,8 @@ export async function setTunFd(fd: number) {
   return await invoke('set_tun_fd', { fd })
 }
 
-export async function getEasytierVersion() {
-  return await invoke<string>('easytier_version')
+export async function getSdwanVersion() {
+  return await invoke<string>('sdwan_version')
 }
 
 export async function listNetworkInstanceIds() {
