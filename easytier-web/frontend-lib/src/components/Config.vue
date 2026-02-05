@@ -26,12 +26,6 @@ const curNetwork = defineModel('curNetwork', {
 
 const { t } = useI18n()
 
-const networking_methods = ref([
-  { value: NetworkingMethod.PublicServer, label: () => t('public_server') },
-  { value: NetworkingMethod.Manual, label: () => t('manual') },
-  { value: NetworkingMethod.Standalone, label: () => t('standalone') },
-])
-
 const protos: { [proto: string]: number } = { tcp: 11010, udp: 11010, wg: 11011, ws: 11011, wss: 11012 }
 
 function searchUrlSuggestions(e: { query: string }): string[] {
@@ -59,24 +53,6 @@ function searchUrlSuggestions(e: { query: string }): string[] {
   }
 
   return ret
-}
-
-const publicServerSuggestions = ref([''])
-
-function searchPresetPublicServers(e: { query: string }) {
-  const presetPublicServers = [
-    'tcp://public.easytier.top:11010',
-  ]
-
-  const query = e.query
-  // if query is sub string of presetPublicServers, add to suggestions
-  let ret = presetPublicServers.filter(item => item.includes(query))
-  // add additional suggestions
-  if (query.length > 0) {
-    ret = ret.concat(searchUrlSuggestions(e))
-  }
-
-  publicServerSuggestions.value = ret
 }
 
 const peerSuggestions = ref([''])
