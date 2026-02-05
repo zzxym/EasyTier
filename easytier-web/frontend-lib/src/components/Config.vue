@@ -6,7 +6,6 @@ import {
   addRow,
   DEFAULT_NETWORK_CONFIG,
   NetworkConfig,
-  NetworkingMethod,
   removeRow
 } from '../types/network'
 import { ref, onMounted, onUnmounted } from 'vue'
