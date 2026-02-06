@@ -127,20 +127,39 @@ jobs:
       - name: Build Android
         run: |
           cd easytier-gui
-          pnpm tauri android build
+          pnpm tauri android build --verbose
+
+      - name: Debug - List directory structure
+        run: |
+          echo "=== Listing easytier-gui directory structure ==="
+          find easytier-gui -type f -name "*.apk" | head -20
+          echo "=== Listing gen/android directory ==="
+          ls -la easytier-gui/src-tauri/gen/android/ 2>/dev/null || echo "gen/android directory does not exist"
+          echo "=== Listing build/outputs directory ==="
+          find easytier-gui -path "*/build/outputs*" -type d | head -10
 
       - name: Compress
         run: |
           mkdir -p ./artifacts/objects/
           
           # Find the generated APK file
+          echo "=== Searching for APK files ==="
+          find easytier-gui -name "*.apk" | head -20
+          
           APK_FILE=$(find easytier-gui -name "*.apk" | grep -v "unaligned" | grep -v "unsigned" | head -1)
           
+          echo "Found APK file: $APK_FILE"
+          
           if [ -f "$APK_FILE" ]; then
+            echo "Moving $APK_FILE to ./artifacts/objects/"
             mv "$APK_FILE" ./artifacts/objects/
+            echo "APK file moved successfully"
           else
             echo "Error: No APK file found"
-            find easytier-gui -name "*.apk" | head -10
+            echo "=== Detailed directory listing ==="
+            ls -la easytier-gui/
+            ls -la easytier-gui/src-tauri/
+            ls -la easytier-gui/src-tauri/gen/ 2>/dev/null || echo "gen directory does not exist"
             exit 1
           fi
           
