@@ -25,7 +25,7 @@ const curNetwork = defineModel('curNetwork', {
 
 const { t } = useI18n()
 
-const protos: { [proto: string]: number } = { tcp: 11010, udp: 11010, wg: 11011, ws: 11011, wss: 11012 }
+const protos: { [proto: string]: number } = { tcp: 10010, udp: 10010, wg: 10011, ws: 10011, wss: 10012 }
 
 function searchUrlSuggestions(e: { query: string }): string[] {
   const query = e.query
@@ -423,7 +423,7 @@ onMounted(() => {
 
           <Divider />
 
-          <Panel :header="t('port_forwards')" toggleable collapsed>
+          <Panel v-if="false" :header="t('port_forwards')" toggleable collapsed>
             <div ref="portForwardContainer" class="flex flex-col gap-y-2">
               <div class="flex flex-row gap-x-9 flex-wrap w-full">
                 <div class="flex flex-col gap-2 grow p-fluid">

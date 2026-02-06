@@ -104,8 +104,8 @@ export function DEFAULT_NETWORK_CONFIG(): NetworkConfig {
     advanced_settings: false,
 
     listener_urls: [
-      'tcp://0.0.0.0:11010',
-      'udp://0.0.0.0:11010'
+      'tcp://0.0.0.0:10010',
+      'udp://0.0.0.0:10010'
     ],
     latency_first: true,
     dev_name: '',

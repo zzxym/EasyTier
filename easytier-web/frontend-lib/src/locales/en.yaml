@@ -109,7 +109,7 @@ p2p_only: P2P Only
 p2p_only_help: Only communicate with peers that have already established P2P connections, do not relay through other nodes.
 
 bind_device: Bind to Physical Device Only
-bind_device_help: Use only the physical network interface to prevent EasyTier from connecting via virtual networks.
+bind_device_help: Use only the physical network interface to prevent SDWAN from connecting via virtual networks.
 
 no_tun: No TUN Mode
 no_tun_help: Do not use a TUN interface, suitable for environments without administrator privileges. This node is only accessible; accessing other nodes requires SOCKS5.
@@ -204,7 +204,7 @@ about:
   author: Author
   homepage: Homepage
   license: License
-  description: 'EasyTier is a simple, safe and decentralized VPN networking solution implemented with the Rust language and Tokio framework.'
+  description: 'SDWAN is a simple, safe and decentralized VPN networking solution implemented with the Rust language and Tokio framework.'
   check_update: Check Update
 
 event:
@@ -360,7 +360,7 @@ mode:
   normal: Normal
   service: Service
   remote: Remote
-  normal_description: Run EasyTier directly, suitable for local use.
+  normal_description: Run SDWAN directly, suitable for local use.
   service_description: Run as a system service, supporting auto-startup and background operation. The service continues to run in the background after exiting the GUI.
   remote_description: Connect to a remote RPC service to manage and control remote nodes.
   service_status: Service Status

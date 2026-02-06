@@ -110,7 +110,7 @@ p2p_only: 仅 P2P
 p2p_only_help: 仅与已经建立P2P连接的对等节点通信，不通过其他节点中转。
 
 bind_device: 仅使用物理网卡
-bind_device_help: 仅使用物理网卡，避免 EasyTier 通过其他虚拟网建立连接。
+bind_device_help: 仅使用物理网卡，避免 SDWAN 通过其他虚拟网建立连接。
 
 no_tun: 无 TUN 模式
 no_tun_help: 不使用 TUN 网卡，适合无管理员权限时使用。本节点仅允许被访问。访问其他节点需要使用 SOCK5
@@ -143,7 +143,7 @@ disable_sym_hole_punching_help: 禁用对称NAT的打洞（生日攻击），将
 
 enable_magic_dns: 启用魔法DNS
 enable_magic_dns_help: |
-  启用魔法DNS，允许通过EasyTier的DNS服务器访问其他节点的虚拟IPv4地址， 如 node1.et.net。
+  启用魔法DNS，允许通过SDWAN的DNS服务器访问其他节点的虚拟IPv4地址， 如 node1.et.net。
 
 enable_private_mode: 启用私有模式
 enable_private_mode_help: |
@@ -360,7 +360,7 @@ mode:
   normal: 普通模式
   service: 服务模式
   remote: 远程模式
-  normal_description: 直接运行EasyTier，适合本地使用
+  normal_description: 直接运行SDWAN，适合本地使用
   service_description: 作为系统服务运行，支持开机自启和后台运行。退出GUI后服务仍在后台运行。
   remote_description: 连接到远程RPC服务，管理和控制远程节点
   service_status: 服务状态
