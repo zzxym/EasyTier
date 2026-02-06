@@ -118,6 +118,12 @@ jobs:
           # GitHub repo token to use to avoid rate limiter
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Clean and initialize Android project
+        run: |
+          cd easytier-gui
+          rm -rf src-tauri/gen/android
+          pnpm tauri android init
+
       - name: Build Android
         run: |
           cd easytier-gui
