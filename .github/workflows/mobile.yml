@@ -146,7 +146,7 @@ jobs:
           echo "=== Searching for APK files ==="
           find easytier-gui -name "*.apk" | head -20
           
-          APK_FILE=$(find easytier-gui -name "*.apk" | grep -v "unaligned" | grep -v "unsigned" | head -1)
+          APK_FILE=$(find easytier-gui -name "*.apk" | grep -v "unaligned" | head -1)
           
           echo "Found APK file: $APK_FILE"
           
