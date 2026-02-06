@@ -132,7 +132,17 @@ jobs:
       - name: Compress
         run: |
           mkdir -p ./artifacts/objects/
-          mv easytier-gui/src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk ./artifacts/objects/
+          
+          # Find the generated APK file
+          APK_FILE=$(find easytier-gui -name "*.apk" | grep -v "unaligned" | grep -v "unsigned" | head -1)
+          
+          if [ -f "$APK_FILE" ]; then
+            mv "$APK_FILE" ./artifacts/objects/
+          else
+            echo "Error: No APK file found"
+            find easytier-gui -name "*.apk" | head -10
+            exit 1
+          fi
           
           if [[ $GITHUB_REF_TYPE =~ ^tag$ ]]; then
             TAG=$GITHUB_REF_NAME
