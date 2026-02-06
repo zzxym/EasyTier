@@ -5,12 +5,6 @@ fn main() {
         .unwrap_or_default()
         .contains("aarch64")
     {
-        // Wrap thunk call in a try-catch to handle download failures
-        if let Err(e) = std::panic::catch_unwind(|| {
-            thunk::thunk();
-        }) {
-            println!("cargo::warning=thunk-rs initialization failed: {:?}", e);
-            println!("cargo::warning=Build will continue without VC-LTL5/YY-Thunks optimizations");
-        }
+        thunk::thunk();
     }
 }
