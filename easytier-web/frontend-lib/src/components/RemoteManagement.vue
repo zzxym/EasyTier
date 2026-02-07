@@ -157,36 +157,6 @@ const showMoreButton = computed(() => {
     return false;
 });
 
-// 控制编辑网络按钮的显示
-const showEditNetworkButton = computed(() => {
-    // 当网络未运行时隐藏
-    return false;
-});
-
-// 控制基础设置中各项的显示
-const showBasicSettings = computed(() => {
-    // 始终显示基础设置部分
-    return true;
-});
-
-// 控制虚拟IPv4地址的显示
-const showVirtualIpv4 = computed(() => {
-    // 始终隐藏，无论网络状态如何
-    return false;
-});
-
-// 控制网络名称的显示
-const showNetworkName = computed(() => {
-    // 始终隐藏，无论网络状态如何
-    return false;
-});
-
-// 控制子网代理CIDR的显示
-const showSubnetProxyCidr = computed(() => {
-    // 始终显示，无论网络状态如何
-    return true;
-});
-
 const networkIsDisabled = computed(() => {
     if (!selectedInstanceId.value) {
         return false;
