@@ -244,7 +244,7 @@ onMounted(() => {
                 <div class="flex flex-col gap-2 grow p-fluid">
                   <label for="username">{{ t('proxy_cidrs') }}</label>
                   <AutoComplete id="subnet-proxy" v-model="curNetwork.proxy_cidrs"
-                    :placeholder="t('chips_placeholder', ['10.0.0.0/24']" class="w-full" multiple fluid
+                    :placeholder="t('chips_placeholder', ['10.0.0.0/24'])" class="w-full" :multiple="true" fluid
                     :suggestions="inetSuggestions" @complete="searchInetSuggestions" />
                 </div>
               </div>
