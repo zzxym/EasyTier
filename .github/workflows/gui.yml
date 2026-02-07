@@ -146,6 +146,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      - name: Clean previous builds
+        run: |
+          if [[ $OS =~ ^macos.*$ ]]; then
+            # Clean previous macOS builds to avoid resource busy issues
+            rm -rf ./target
+            rm -rf ./easytier-gui/src-tauri/target
+          fi
+
       - name: Install frontend dependencies
         run: |
           pnpm -r install
