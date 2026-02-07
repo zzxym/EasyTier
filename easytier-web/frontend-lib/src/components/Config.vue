@@ -311,7 +311,7 @@ onMounted(() => {
                   <label for="listener_urls">{{ t('listener_urls') }}</label>
                   <AutoComplete id="listener_urls" v-model="curNetwork.listener_urls" :suggestions="listenerSuggestions"
                     class="w-full" dropdown :complete-on-focus="true"
-                    :placeholder="t('chips_placeholder', ['tcp://1.1.1.1:11010']" multiple
+                    :placeholder="t('chips_placeholder', ['tcp://1.1.1.1:11010'])" :multiple="true"
                     @complete="searchListenerSuggestions" />
                 </div>
               </div>
