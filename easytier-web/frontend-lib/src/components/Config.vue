@@ -365,7 +365,7 @@ onMounted(() => {
                   <div v-if="curNetwork.enable_manual_routes" class="items-center flex flex-row gap-x-4">
                     <div class="min-w-64 w-full">
                       <AutoComplete id="routes" v-model="curNetwork.routes"
-                        :placeholder="t('chips_placeholder', ['192.168.0.0/16']" class="w-full" multiple fluid
+                        :placeholder="t('chips_placeholder', ['192.168.0.0/16'])" class="w-full" :multiple="true" fluid
                         :suggestions="inetSuggestions" @complete="searchInetSuggestions" />
                     </div>
                   </div>
