@@ -32,7 +32,7 @@ function searchUrlSuggestions(e: { query: string }): string[] {
   const query = e.query
   const ret = []
   // if query match "^\w+:.*", then no proto prefix
-  if (query.match(/^\w+:.*/)) {
+  if (query.match(/^\w+:.*$/)) {
     // if query is a valid url, then add to suggestions
     try {
       // eslint-disable-next-line no-new
@@ -244,7 +244,7 @@ onMounted(() => {
                 <div class="flex flex-col gap-2 grow p-fluid">
                   <label for="username">{{ t('proxy_cidrs') }}</label>
                   <AutoComplete id="subnet-proxy" v-model="curNetwork.proxy_cidrs"
-                    :placeholder="t('chips_placeholder', ['10.0.0.0/24'])" class="w-full" multiple fluid
+                    :placeholder="t('chips_placeholder', ['10.0.0.0/24']" class="w-full" multiple fluid
                     :suggestions="inetSuggestions" @complete="searchInetSuggestions" />
                 </div>
               </div>
@@ -281,15 +281,6 @@ onMounted(() => {
                 </div>
               </div>
 
-              <div class="flex flex-row gap-x-9 flex-wrap w-full">
-                <div class="flex flex-col gap-2 grow p-fluid">
-                  <label for="username">{{ t('proxy_cidrs') }}</label>
-                  <AutoComplete id="subnet-proxy" v-model="curNetwork.proxy_cidrs"
-                    :placeholder="t('chips_placeholder', ['10.0.0.0/24'])" class="w-full" multiple fluid
-                    :suggestions="inetSuggestions" @complete="searchInetSuggestions" />
-                </div>
-              </div>
-
               <div class="flex flex-row gap-x-9 flex-wrap ">
                 <div class="flex flex-col gap-2 grow">
                   <label for="username">VPN Portal</label>
@@ -320,7 +311,7 @@ onMounted(() => {
                   <label for="listener_urls">{{ t('listener_urls') }}</label>
                   <AutoComplete id="listener_urls" v-model="curNetwork.listener_urls" :suggestions="listenerSuggestions"
                     class="w-full" dropdown :complete-on-focus="true"
-                    :placeholder="t('chips_placeholder', ['tcp://1.1.1.1:11010'])" multiple
+                    :placeholder="t('chips_placeholder', ['tcp://1.1.1.1:11010']" multiple
                     @complete="searchListenerSuggestions" />
                 </div>
               </div>
@@ -374,7 +365,7 @@ onMounted(() => {
                   <div v-if="curNetwork.enable_manual_routes" class="items-center flex flex-row gap-x-4">
                     <div class="min-w-64 w-full">
                       <AutoComplete id="routes" v-model="curNetwork.routes"
-                        :placeholder="t('chips_placeholder', ['192.168.0.0/16'])" class="w-full" multiple fluid
+                        :placeholder="t('chips_placeholder', ['192.168.0.0/16']" class="w-full" multiple fluid
                         :suggestions="inetSuggestions" @complete="searchInetSuggestions" />
                     </div>
                   </div>
@@ -405,7 +396,7 @@ onMounted(() => {
                     <span class="pi pi-question-circle ml-2 self-center" v-tooltip="t('exit_nodes_help')"></span>
                   </div>
                   <AutoComplete id="exit_nodes" v-model="curNetwork.exit_nodes"
-                    :placeholder="t('chips_placeholder', ['192.168.8.8'])" class="w-full" multiple fluid
+                    :placeholder="t('chips_placeholder', ['192.168.8.8']" class="w-full" multiple fluid
                     :suggestions="exitNodesSuggestions" @complete="searchExitNodesSuggestions" />
                 </div>
               </div>
@@ -417,7 +408,7 @@ onMounted(() => {
                     <span class="pi pi-question-circle ml-2 self-center" v-tooltip="t('mapped_listeners_help')"></span>
                   </div>
                   <AutoComplete id="mapped_listeners" v-model="curNetwork.mapped_listeners"
-                    :placeholder="t('chips_placeholder', ['tcp://123.123.123.123:11223'])" class="w-full" multiple fluid
+                    :placeholder="t('chips_placeholder', ['tcp://123.123.123.123:11223']" class="w-full" multiple fluid
                     :suggestions="peerSuggestions" @complete="searchPeerSuggestions" />
                 </div>
               </div>
