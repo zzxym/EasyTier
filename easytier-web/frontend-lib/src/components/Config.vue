@@ -408,7 +408,7 @@ onMounted(() => {
                     <span class="pi pi-question-circle ml-2 self-center" v-tooltip="t('mapped_listeners_help')"></span>
                   </div>
                   <AutoComplete id="mapped_listeners" v-model="curNetwork.mapped_listeners"
-                    :placeholder="t('chips_placeholder', ['tcp://123.123.123.123:11223']" class="w-full" multiple fluid
+                    :placeholder="t('chips_placeholder', ['tcp://123.123.123.123:11223'])" class="w-full" :multiple="true" fluid
                     :suggestions="peerSuggestions" @complete="searchPeerSuggestions" />
                 </div>
               </div>
