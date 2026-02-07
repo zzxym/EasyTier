@@ -58,7 +58,7 @@ async function doStartVpn(ipv4Addr: string, cidr: number, routes: string[], dns?
     ipv4Addr: `${ipv4Addr}/${cidr}`,
     routes,
     dns,
-    disallowedApplications: ['com.kkrainbow.sdwan'],
+    disallowedApplications: ['com.zzxym.sdwan'],
     mtu: 1300,
   })
   if (start_ret?.errorMsg?.length) {
@@ -114,7 +114,7 @@ function getRoutesForVpn(routes: Route[], node_config: NetworkTypes.NetworkConfi
     }
   }
 
-  node_config.routes.forEach(r => {
+  node_config.routes.forEach((r) => {
     ret.push(r)
   })
 
@@ -170,7 +170,7 @@ export async function onNetworkInstanceChange(instanceId: string) {
 
   const routes = getRoutesForVpn(curNetworkInfo?.routes, config)
 
-  const dns = config.enable_magic_dns ? '100.100.100.101' : undefined;
+  const dns = config.enable_magic_dns ? '100.100.100.101' : undefined
 
   const ipChanged = virtual_ip !== curVpnStatus.ipv4Addr
   const routesChanged = JSON.stringify(routes) !== JSON.stringify(curVpnStatus.routes)
@@ -190,7 +190,7 @@ export async function onNetworkInstanceChange(instanceId: string) {
     }
     catch (e) {
       console.error('start vpn service failed, stop all other network insts.', e)
-      await runNetworkInstance(config, true); //on android config should always be saved
+      await runNetworkInstance(config, true) // on android config should always be saved
     }
   }
 }

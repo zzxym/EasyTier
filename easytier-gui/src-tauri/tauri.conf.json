@@ -18,7 +18,7 @@
   },
   "productName": "sdwan-gui",
   "version": "2.5.0",
-  "identifier": "com.kkrainbow.sdwan",
+  "identifier": "com.zzxym.sdwan",
   "plugins": {
     "shell": {
       "open": "^.+"
