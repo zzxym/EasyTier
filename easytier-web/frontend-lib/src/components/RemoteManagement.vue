@@ -241,17 +241,6 @@ const saveAndRunNewNetwork = async (config?: NetworkTypes.NetworkConfig) => {
     isEditingNetwork.value = false;
 }
 
-const saveNetworkConfig = async () => {
-    if (!currentNetworkConfig.value) {
-        return;
-    }
-    await props.api.save_config(currentNetworkConfig.value);
-
-    delete networkMetaCache.value[currentNetworkConfig.value.instance_id];
-    await loadNetworkMetas([currentNetworkConfig.value.instance_id]);
-
-    toast.add({ severity: 'success', summary: t("web.common.success"), detail: t("web.device_management.config_saved"), life: 2000 });
-}
 const newNetwork = async () => {
     const newNetworkConfig = props.newConfigGenerator?.() ?? NetworkTypes.DEFAULT_NETWORK_CONFIG();
     await props.api.save_config(newNetworkConfig);
@@ -322,10 +311,6 @@ const exportConfig = async () => {
         toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to export network config, error: ' + JSON.stringify(e.response.data), life: 2000 });
         return;
     }
-}
-
-const importConfig = () => {
-    configFile.value.click();
 }
 
 const handleFileUpload = (event: Event) => {

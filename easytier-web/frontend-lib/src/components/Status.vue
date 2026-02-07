@@ -5,7 +5,7 @@ import { NetworkInstance, type TunnelInfo, type NodeInfo, type PeerRoutePair } f
 import { useI18n } from 'vue-i18n';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { ipv4InetToString, ipv4ToString, ipv6ToString } from '../modules/utils';
-import { Badge, DataTable, Column, Tag, Chip, Button, Dialog, ScrollPanel, Timeline, Divider, Card, } from 'primevue';
+import { Badge, DataTable, Column, Tag, Chip, Dialog, ScrollPanel, Timeline, Divider, Card, } from 'primevue';
 import NetworkChart from './NetworkChart.vue';
 
 const props = defineProps<{
@@ -326,26 +326,7 @@ const dialogVisible = ref(false)
 const dialogContent = ref<any>('')
 const dialogHeader = ref('event_log')
 
-function showVpnPortalConfig() {
-  const my_node_info = myNodeInfo.value
-  if (!my_node_info)
-    return
 
-  const url = 'https://www.wireguardconfig.com/qrcode'
-  dialogContent.value = `${my_node_info.vpn_portal_cfg}\n\n # can generate QR code: ${url}`
-  dialogHeader.value = 'vpn_portal_config'
-  dialogVisible.value = true
-}
-
-function showEventLogs() {
-  const detail = props.curNetworkInst?.detail
-  if (!detail)
-    return
-
-  dialogContent.value = detail.events.map((event: string) => JSON.parse(event))
-  dialogHeader.value = 'event_log'
-  dialogVisible.value = true
-}
 </script>
 
 <template>
