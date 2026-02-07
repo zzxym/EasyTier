@@ -134,12 +134,7 @@ function tunnelProto(info: PeerRoutePair) {
   return [...new Set(info.peer?.conns.map(c => oneTunnelProto(c.tunnel)))].join(',')
 }
 
-const myNodeInfo = computed(() => {
-  if (!props.curNetworkInst)
-    return {} as NodeInfo
 
-  return props.curNetworkInst.detail?.my_node_info
-})
 
 interface Chip {
   label: string
