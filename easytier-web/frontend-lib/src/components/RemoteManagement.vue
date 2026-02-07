@@ -453,7 +453,7 @@ onUnmounted(() => {
         <ConfirmPopup></ConfirmPopup>
 
         <!-- 网络选择和操作按钮始终在同一行 -->
-        <div class="network-header bg-surface-50 p-3 rounded-lg shadow-sm mb-1">
+        <div v-if="instanceList.length > 0" class="network-header bg-surface-50 p-3 rounded-lg shadow-sm mb-1">
             <div class="flex flex-row justify-between items-center gap-2" style="align-items: center;">
                 <!-- 网络选择 -->
                 <div class="flex-1 min-w-0">
@@ -539,21 +539,23 @@ onUnmounted(() => {
 
         <!-- Main Content Area -->
         <div class="network-content bg-surface-0 p-4 rounded-lg shadow-sm">
-            <!-- Network Creation Form -->
-            <div v-if="isEditingNetwork || networkIsDisabled" class="network-creation-container">
+            <!-- 当未创建网络配置时 -->
+            <div v-if="instanceList.length === 0" class="empty-state flex flex-col items-center py-12">
+                <i class="pi pi-sitemap text-5xl text-secondary mb-4 opacity-50"></i>
+                <div class="text-xl text-center font-medium mb-3">{{ t('web.device_management.no_network_selected') }}
+                </div>
+                <p class="text-secondary text-center mb-6 max-w-md">
+                    {{ t('web.device_management.select_existing_network_or_create_new') }}
+                </p>
+                <Button @click="newNetwork" :label="t('web.device_management.create_network')" icon="pi pi-plus"
+                    iconPos="left" />
+            </div>
+
+            <!-- Network Creation Form (已存在网络配置但未运行) -->
+            <div v-else-if="isEditingNetwork || networkIsDisabled" class="network-creation-container">
                 <div class="network-creation-header flex items-center gap-2 mb-3">
                     <i class="pi pi-plus-circle text-primary text-xl"></i>
                     <h2 class="text-xl font-medium">{{ t('web.device_management.edit_network') }}</h2>
-                </div>
-
-                <div class="w-full flex gap-2 flex-wrap justify-start mb-3">
-                    <Button @click="showConfigEditDialog = true" icon="pi pi-file-edit"
-                        :label="t('web.device_management.edit_as_file')" iconPos="left" severity="secondary" />
-                    <Button @click="importConfig" icon="pi pi-upload" :label="t('web.device_management.import_config')"
-                        iconPos="left" severity="help" />
-                    <Button v-if="networkIsDisabled" @click="saveNetworkConfig" :disabled="!currentNetworkConfig"
-                        icon="pi pi-save" :label="t('web.device_management.save_config')" iconPos="left"
-                        severity="success" />
                 </div>
 
                 <Divider />
@@ -581,8 +583,8 @@ onUnmounted(() => {
                 </div>
             </div>
 
-            <!-- Empty State -->
-            <div v-else class="empty-state flex flex-col items-center py-12">
+            <!-- Empty State (当有网络配置但未选择时) -->
+            <div v-else-if="instanceList.length > 0 && !selectedInstanceId" class="empty-state flex flex-col items-center py-12">
                 <i class="pi pi-sitemap text-5xl text-secondary mb-4 opacity-50"></i>
                 <div class="text-xl text-center font-medium mb-3">{{ t('web.device_management.no_network_selected') }}
                 </div>

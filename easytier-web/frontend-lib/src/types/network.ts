@@ -81,7 +81,7 @@ export function DEFAULT_NETWORK_CONFIG(): NetworkConfig {
     dhcp: true,
     virtual_ipv4: '',
     network_length: 24,
-    network_name: 'xlxxadmin',
+    network_name: 'guest',
     network_secret: 'Aa123456',
 
     networking_method: NetworkingMethod.Manual,

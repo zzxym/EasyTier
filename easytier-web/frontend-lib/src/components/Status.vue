@@ -393,23 +393,11 @@ function showEventLogs() {
               </div>
             </div>
 
-            <!-- 展开/收起节点详细信息的divider按钮 -->
-            <div class="w-full">
-              <Button @click="showNodeDetails = !showNodeDetails"
-                :icon="showNodeDetails ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                :label="showNodeDetails ? t('hide_node_details') : t('show_node_details')" severity="secondary" outlined
-                class="w-full justify-center" size="small" />
-            </div>
-
+            <!-- 网络运行时隐藏特定按钮 -->
             <!-- 节点详细信息chips，根据showNodeDetails状态显示/隐藏 -->
             <div v-show="showNodeDetails" class="flex flex-row items-center flex-wrap w-full max-h-40 overflow-scroll">
               <Chip v-for="(chip, i) in myNodeInfoChips" :key="i" :label="chip.label" :icon="chip.icon"
                 class="mr-2 mt-2 text-sm" />
-            </div>
-
-            <div v-if="myNodeInfo" class="m-0 flex flex-row justify-center gap-x-5 text-sm">
-              <Button severity="info" :label="t('show_vpn_portal_config')" @click="showVpnPortalConfig" />
-              <Button severity="info" :label="t('show_event_log')" @click="showEventLogs" />
             </div>
           </div>
         </template>
