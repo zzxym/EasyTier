@@ -396,7 +396,7 @@ onMounted(() => {
                     <span class="pi pi-question-circle ml-2 self-center" v-tooltip="t('exit_nodes_help')"></span>
                   </div>
                   <AutoComplete id="exit_nodes" v-model="curNetwork.exit_nodes"
-                    :placeholder="t('chips_placeholder', ['192.168.8.8']" class="w-full" multiple fluid
+                    :placeholder="t('chips_placeholder', ['192.168.8.8'])" class="w-full" :multiple="true" fluid
                     :suggestions="exitNodesSuggestions" @complete="searchExitNodesSuggestions" />
                 </div>
               </div>
