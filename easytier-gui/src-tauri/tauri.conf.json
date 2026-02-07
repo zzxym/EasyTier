@@ -15,15 +15,7 @@
       "icons/icon.ico"
     ],
     "createUpdaterArtifacts": false,
-    "android": {
-      "signing": {
-        "debug": false,
-        "keystore": "${ANDROID_KEYSTORE_PATH}",
-        "keystorePassword": "${ANDROID_KEYSTORE_PASSWORD}",
-        "keyAlias": "${ANDROID_KEY_ALIAS}",
-        "keyPassword": "${ANDROID_KEY_PASSWORD}"
-      }
-    }
+    "android": {}
   },
   "productName": "sdwan-gui",
   "version": "2.5.0",
