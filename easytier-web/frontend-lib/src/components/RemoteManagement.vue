@@ -145,6 +145,48 @@ const needShowNetworkStatus = computed(() => {
     return true;
 })
 
+// 控制网络选择下拉框和创建新网络按钮的显示
+const showNetworkHeaderControls = computed(() => {
+    // 始终隐藏，无论网络状态如何
+    return false;
+});
+
+// 控制更多按钮的显示
+const showMoreButton = computed(() => {
+    // 始终隐藏，无论网络状态如何
+    return false;
+});
+
+// 控制编辑网络按钮的显示
+const showEditNetworkButton = computed(() => {
+    // 当网络未运行时隐藏
+    return false;
+});
+
+// 控制基础设置中各项的显示
+const showBasicSettings = computed(() => {
+    // 始终显示基础设置部分
+    return true;
+});
+
+// 控制虚拟IPv4地址的显示
+const showVirtualIpv4 = computed(() => {
+    // 始终隐藏，无论网络状态如何
+    return false;
+});
+
+// 控制网络名称的显示
+const showNetworkName = computed(() => {
+    // 始终隐藏，无论网络状态如何
+    return false;
+});
+
+// 控制子网代理CIDR的显示
+const showSubnetProxyCidr = computed(() => {
+    // 始终显示，无论网络状态如何
+    return true;
+});
+
 const networkIsDisabled = computed(() => {
     if (!selectedInstanceId.value) {
         return false;
@@ -438,7 +480,7 @@ onUnmounted(() => {
         <ConfirmPopup></ConfirmPopup>
 
         <!-- 网络选择和操作按钮始终在同一行 -->
-        <div v-if="instanceList.length > 0" class="network-header bg-surface-50 p-3 rounded-lg shadow-sm mb-1">
+        <div v-if="instanceList.length > 0 && showNetworkHeaderControls" class="network-header bg-surface-50 p-3 rounded-lg shadow-sm mb-1">
             <div class="flex flex-row justify-between items-center gap-2" style="align-items: center;">
                 <!-- 网络选择 -->
                 <div class="flex-1 min-w-0">
@@ -476,7 +518,7 @@ onUnmounted(() => {
                                 <div class="flex flex-col items-start content-center max-w-full">
                                     <div class="flex items-center min-w-0">
                                         <div class="mr-4 min-w-0 flex-1">
-                                            <span class="truncate block">{{ t('network_name') }}: {{
+                                            <span class="truncate block">{{ t('network_name') }}: {{ 
                                                 slotProps.option.meta.network_name }}</span>
                                         </div>
                                         <Tag class="my-auto leading-3 shrink-0"
@@ -489,7 +531,7 @@ onUnmounted(() => {
                                 </div>
                             </template>
                         </Select>
-                        <label class="network-label mr-2 font-medium" for="dd-inst-id">{{
+                        <label class="network-label mr-2 font-medium" for="dd-inst-id">{{ 
                             t('web.device_management.network') }}</label>
                     </IftaLabel>
                 </div>
@@ -513,7 +555,7 @@ onUnmounted(() => {
 
                     <!-- More actions menu -->
                     <Menu ref="menuRef" :model="actionMenu" :popup="true" />
-                    <Button v-if="!isEditingNetwork && selectedInstanceId" icon="pi pi-ellipsis-v"
+                    <Button v-if="!isEditingNetwork && selectedInstanceId && showMoreButton" icon="pi pi-ellipsis-v"
                         class="p-button-rounded flex items-center justify-center" severity="help"
                         style="width: 3rem !important; height: 3rem !important; font-size: 1.2rem"
                         @click="menuRef.toggle($event)" :aria-label="t('web.device_management.more_actions')"

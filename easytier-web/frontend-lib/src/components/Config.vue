@@ -14,6 +14,7 @@ import { useI18n } from 'vue-i18n'
 const props = defineProps<{
   configInvalid?: boolean
   hostname?: string
+  networkRunning?: boolean
 }>()
 
 defineEmits(['runNetwork'])
@@ -201,7 +202,8 @@ onMounted(() => {
         <div class="w-full self-center ">
           <Panel :header="t('basic_settings')">
             <div class="flex flex-col gap-y-2">
-              <div class="flex flex-row gap-x-9 flex-wrap">
+              <!-- 虚拟IPv4地址 - 始终隐藏 -->
+              <div class="flex flex-row gap-x-9 flex-wrap" v-if="false">
                 <div class="flex flex-col gap-2 basis-5/12 grow">
                   <div class="flex items-center" for="virtual_ip">
                     <label class="mr-2"> {{ t('virtual_ipv4') }} </label>
@@ -224,7 +226,8 @@ onMounted(() => {
                 </div>
               </div>
 
-              <div class="flex flex-row gap-x-9 flex-wrap">
+              <!-- 网络名称 - 始终隐藏 -->
+              <div class="flex flex-row gap-x-9 flex-wrap" v-if="false">
                 <div class="flex flex-col gap-2 basis-5/12 grow">
                   <label for="network_name">{{ t('network_name') }}</label>
                   <InputText id="network_name" v-model="curNetwork.network_name" aria-describedby="network_name-help" />
@@ -236,6 +239,7 @@ onMounted(() => {
                 </div>
               </div>
 
+              <!-- 子网代理CIDR - 始终显示 -->
               <div class="flex flex-row gap-x-9 flex-wrap w-full">
                 <div class="flex flex-col gap-2 grow p-fluid">
                   <label for="username">{{ t('proxy_cidrs') }}</label>
